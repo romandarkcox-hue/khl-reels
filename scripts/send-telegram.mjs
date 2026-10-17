@@ -2,6 +2,7 @@
 //
 // Текст:  node scripts/send-telegram.mjs "Привет"
 // Видео:  node scripts/send-telegram.mjs --video out/reel.mp4 "Подпись"
+// Альбом: node scripts/send-telegram.mjs --photos a.jpg b.jpg --caption "Подпись"
 //
 // Берёт TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID из переменных окружения
 // или из файла .env в корне проекта (если он есть).
@@ -64,10 +65,37 @@ export async function sendVideo(videoPath, caption = "") {
   return callTelegram("sendVideo", form);
 }
 
+// Несколько фото одним альбомом (2–10 штук). Подпись показывается под альбомом.
+export async function sendPhotos(photoPaths, caption = "") {
+  if (photoPaths.length < 2 || photoPaths.length > 10) {
+    fail(`в альбоме должно быть от 2 до 10 фото, а передано ${photoPaths.length}`);
+  }
+  const form = new FormData();
+  form.append("chat_id", chatId);
+  const media = [];
+  for (const [i, path] of photoPaths.entries()) {
+    if (!existsSync(path)) fail(`файл не найден: ${path}`);
+    form.append(`photo${i}`, await openAsBlob(path), basename(path));
+    media.push({
+      type: "photo",
+      media: `attach://photo${i}`,
+      ...(i === 0 && caption ? { caption } : {}),
+    });
+  }
+  form.append("media", JSON.stringify(media));
+  return callTelegram("sendMediaGroup", form);
+}
+
 // Запуск из командной строки
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
-  if (args[0] === "--video") {
+  if (args[0] === "--photos") {
+    const captionAt = args.indexOf("--caption");
+    const photos = args.slice(1, captionAt === -1 ? undefined : captionAt);
+    const caption = captionAt === -1 ? "" : args.slice(captionAt + 1).join(" ");
+    await sendPhotos(photos, caption);
+    console.log(`Альбом отправлен: ${photos.length} фото`);
+  } else if (args[0] === "--video") {
     const [, videoPath, ...rest] = args;
     if (!videoPath) fail("укажите путь к видео после --video");
     await sendVideo(videoPath, rest.join(" "));

@@ -135,11 +135,16 @@ export async function fetchStandings() {
   return { fetchedAt: moscowNow(), conferences };
 }
 
+export function saveStandings(standings) {
+  mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
+  writeFileSync(OUTPUT_PATH, JSON.stringify(standings, null, 2) + "\n");
+  return OUTPUT_PATH;
+}
+
 // Запуск из командной строки
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const standings = await fetchStandings();
-  mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
-  writeFileSync(OUTPUT_PATH, JSON.stringify(standings, null, 2) + "\n");
+  saveStandings(standings);
 
   for (const conf of standings.conferences) {
     console.log(`\n== Конференция «${conf.name}» ==`);
