@@ -44,6 +44,7 @@ export type Scene = {
   matchId?: number;
   text: string;
   voice: string | null; // путь внутри public/
+  voiceFrames: number | null; // длительность озвучки в кадрах
   frames: number;
 };
 

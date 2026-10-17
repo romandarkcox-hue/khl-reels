@@ -55,19 +55,33 @@ mkdirSync(VOICE_DIR, { recursive: true });
 const scenes = [];
 for (const scene of script.scenes) {
   let voice = null;
+  let voiceFrames = null;
   let seconds = scene.text.length / 14 + 1; // примерная длительность чтения без голоса
   if (hasTtsKey()) {
     const file = `voice/${day}-${scene.id}.mp3`;
-    try {
-      await synthesize(scene.text, join(PUBLIC_DIR, file));
-      voice = file;
-      seconds = audioSeconds(join(PUBLIC_DIR, file)) + 0.8;
-    } catch (err) {
-      console.warn(`   озвучка сцены ${scene.id} не удалась: ${err.message}`);
+    // Сеть до SpeechKit иногда обрывается, поэтому до пяти попыток с паузой.
+    for (let attempt = 1; attempt <= 5 && !voice; attempt++) {
+      if (attempt > 1) await new Promise((r) => setTimeout(r, attempt * 2000));
+      try {
+        await synthesize(scene.text, join(PUBLIC_DIR, file));
+        voice = file;
+        const voiceSeconds = audioSeconds(join(PUBLIC_DIR, file));
+        voiceFrames = Math.ceil(voiceSeconds * FPS);
+        seconds = voiceSeconds + 0.8;
+      } catch (err) {
+        console.warn(`   озвучка сцены ${scene.id}, попытка ${attempt}: ${err.message}`);
+      }
     }
   }
   seconds = Math.max(seconds, MIN_SECONDS[scene.type]);
-  scenes.push({ ...scene, voice, frames: Math.ceil(seconds * FPS) });
+  scenes.push({ ...scene, voice, voiceFrames, frames: Math.ceil(seconds * FPS) });
+}
+
+// Ролик с «дырой» в озвучке не собираем и не отправляем.
+const silent = hasTtsKey() ? scenes.filter((s) => !s.voice).map((s) => s.id) : [];
+if (silent.length) {
+  console.error(`Ошибка: не удалось озвучить сцены ${silent.join(", ")}. Ролик не собран, запустите ещё раз.`);
+  process.exit(1);
 }
 
 const music = existsSync(join(PUBLIC_DIR, MUSIC)) ? MUSIC : null;
