@@ -29,7 +29,13 @@
 
 ## Окружение
 - Node.js v24.20.0 LTS и npm 11.19.0 установлены через winget (2026-10-17).
-- Плагины, которые предложены к установке: Remotion (обязательно), Social Media Skills, Posty. Проверить, какие уже подключены.
+- Git 2.55 и GitHub CLI 2.102 установлены (2026-10-17). Вход в gh выполнен как `romandarkcox-hue`. Почта для коммитов служебная: `275739583+romandarkcox-hue@users.noreply.github.com`.
+- Репозиторий: https://github.com/romandarkcox-hue/khl-reels (приватный, ветка `main`). Один репозиторий на всю папку `khl-reels`.
+- Проект Remotion 4.0.536 (шаблон Blank, TypeScript) лежит в `video/`. Chrome Headless Shell для рендера ещё не скачан: Remotion скачает его сам при первом рендере.
+- Плагин Remotion для Claude Code установлен (remotion@anthropic-plugin-directory). Social Media Skills и Posty пока не ставили.
+- Telegram-бот @khltable_bot присылает пользователю готовые ролики на просмотр. В `.env` (не в Git) лежат `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID`. Отправка: `node scripts/send-telegram.mjs "текст"` или `--video путь.mp4 "подпись"`.
+- VS Code переведён на русский (языковой пакет, `"locale": "ru"` в argv.json).
+- Пользователь просит: сначала план, действия только после его согласия.
 
 ## Открытые вопросы
 - Аватар с лицом пользователя или выдуманный ведущий?
