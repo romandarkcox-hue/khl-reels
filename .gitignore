@@ -6,3 +6,5 @@ dist/
 *.log
 video/public/standings.json
 video/public/logos/
+video/public/review.json
+video/public/voice/

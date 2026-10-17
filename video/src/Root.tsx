@@ -1,4 +1,7 @@
-import { CalculateMetadataFunction, Still, staticFile } from "remotion";
+import { CalculateMetadataFunction, Composition, Still, staticFile } from "remotion";
+import { ReviewVideo, ReviewVideoProps } from "./review/ReviewVideo";
+import { FPS, HEIGHT as REEL_HEIGHT, WIDTH as REEL_WIDTH } from "./review/shared";
+import { Review } from "./review/types";
 import { StandingsCard, StandingsCardProps } from "./StandingsCard";
 import { Standings } from "./standings";
 
@@ -20,9 +23,33 @@ const loadStandings: CalculateMetadataFunction<StandingsCardProps> = async ({
   return { props: { ...props, standings } };
 };
 
+// Reels «Итоги игрового дня»: длительность = сумма длительностей сцен из public/review.json.
+const loadReview: CalculateMetadataFunction<ReviewVideoProps> = async ({ props }) => {
+  const res = await fetch(staticFile("review.json"));
+  if (!res.ok) {
+    throw new Error("Нет public/review.json. Сначала запустите node scripts/make-review.mjs");
+  }
+  const review = (await res.json()) as Review;
+  const durationInFrames = Math.max(
+    1,
+    review.scenes.reduce((sum, s) => sum + s.frames, 0),
+  );
+  return { props: { ...props, review }, durationInFrames };
+};
+
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="review"
+        component={ReviewVideo}
+        width={REEL_WIDTH}
+        height={REEL_HEIGHT}
+        fps={FPS}
+        durationInFrames={1}
+        defaultProps={{ review: null }}
+        calculateMetadata={loadReview}
+      />
       <Still
         id="west"
         component={StandingsCard}

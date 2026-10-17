@@ -7,61 +7,15 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { fail, fetchWithCookies, moscowNow, openSession, restPost } from "./khl.mjs";
 
-const SITE = "https://www.khl.ru";
-const USER_AGENT =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 const CONFERENCE_NAMES = { west: "Запад", east: "Восток" };
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PUBLIC_DIR = join(ROOT, "video", "public");
+export const PUBLIC_DIR = join(ROOT, "video", "public");
 const OUTPUT_PATH = join(PUBLIC_DIR, "standings.json");
 const LOGOS_DIR = join(PUBLIC_DIR, "logos");
 export const HISTORY_DIR = join(ROOT, "data", "history");
-
-function fail(message) {
-  console.error(`Ошибка: ${message}`);
-  process.exit(1);
-}
-
-// Защита от ботов на khl.ru и img.khl.ru сначала ставит cookie и делает
-// редирект на тот же адрес, поэтому редиректы проходим вручную, сохраняя cookie.
-async function fetchWithCookies(url, cookies, headers = {}) {
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(url, {
-      redirect: "manual",
-      headers: { "User-Agent": USER_AGENT, ...headers, Cookie: cookieHeader(cookies) },
-    });
-    for (const line of res.headers.getSetCookie()) {
-      const [pair] = line.split(";");
-      const eq = pair.indexOf("=");
-      cookies.set(pair.slice(0, eq).trim(), pair.slice(eq + 1).trim());
-    }
-    if (res.status >= 300 && res.status < 400) {
-      url = new URL(res.headers.get("location") ?? url, url).href;
-      continue;
-    }
-    return res;
-  }
-  throw new Error("бесконечные перенаправления (защита от ботов не пропустила)");
-}
-
-async function openStandingsPage(cookies) {
-  let res;
-  try {
-    res = await fetchWithCookies(`${SITE}/standings/`, cookies, {
-      "Accept-Language": "ru-RU,ru;q=0.9",
-    });
-  } catch (err) {
-    fail(`не удалось открыть khl.ru: ${err.message}`);
-  }
-  if (!res.ok) fail(`khl.ru ответил ${res.status} на странице таблицы`);
-  return res.text();
-}
-
-function cookieHeader(cookies) {
-  return [...cookies].map(([k, v]) => `${k}=${v}`).join("; ");
-}
 
 // Поле приходит то строкой с JSON, то готовым массивом.
 function parseMaybeJson(value, fallback) {
@@ -106,43 +60,11 @@ function toTeam(row, inPlayoffZone) {
   };
 }
 
-// Время по Москве (UTC+3) в формате ISO.
-function moscowNow() {
-  const msk = new Date(Date.now() + 3 * 60 * 60 * 1000);
-  return msk.toISOString().replace(/\.\d+Z$/, "+03:00");
-}
+export async function fetchStandings(session) {
+  session ??= await openSession("/standings/");
+  const data = await restPost(session, "standings/regular", { "values[type]": "regular" });
 
-export async function fetchStandings() {
-  const cookies = new Map();
-  const html = await openStandingsPage(cookies);
-  const sessid = html.match(/"bitrix_sessid":"([0-9a-f]+)"/)?.[1];
-  if (!sessid) fail("не нашёл bitrix_sessid на странице таблицы");
-
-  const form = new FormData();
-  form.append("values[type]", "regular");
-  form.append("sessid", sessid);
-
-  let res;
-  try {
-    res = await fetch(`${SITE}/rest/standings/regular/`, {
-      method: "POST",
-      body: form,
-      headers: {
-        "User-Agent": USER_AGENT,
-        Referer: `${SITE}/standings/`,
-        "X-Requested-With": "XMLHttpRequest",
-        Cookie: cookieHeader(cookies),
-      },
-    });
-  } catch (err) {
-    fail(`не удалось получить таблицу: ${err.message}`);
-  }
-  const body = await res.json().catch(() => null);
-  if (!res.ok || body?.status !== "success") {
-    fail(`khl.ru не отдал таблицу (код ${res.status}, статус ${body?.status ?? "нет JSON"})`);
-  }
-
-  const conferences = (body.data?.json?.conferences ?? []).map((conf) => {
+  const conferences = (data?.json?.conferences ?? []).map((conf) => {
     const teams = [];
     let inPlayoffZone = true;
     for (const row of conf.rows) {
