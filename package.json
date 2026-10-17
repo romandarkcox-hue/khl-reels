@@ -1,0 +1,12 @@
+{
+  "name": "khl-reels",
+  "private": true,
+  "description": "Ежедневная карусель с таблицей КХЛ для Instagram",
+  "scripts": {
+    "cards": "node scripts/make-cards.mjs",
+    "standings": "node scripts/fetch-standings.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0"
+  }
+}

@@ -5,3 +5,4 @@ dist/
 .env.*
 *.log
 video/public/standings.json
+video/public/logos/

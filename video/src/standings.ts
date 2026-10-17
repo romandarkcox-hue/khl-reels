@@ -4,6 +4,7 @@ export type Team = {
   rank: number;
   name: string;
   clubId: number;
+  logo: string | null; // путь внутри public/, например "logos/2.png"
   gp: number;
   w: number;
   otw: number;
