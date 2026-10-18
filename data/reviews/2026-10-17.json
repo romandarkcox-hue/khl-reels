@@ -1,0 +1,562 @@
+{
+  "date": "2026-10-17",
+  "fetchedAt": "2026-10-18T12:52:48+03:00",
+  "total": 3,
+  "finished": 3,
+  "live": 0,
+  "lastStart": "17:00",
+  "matches": [
+    {
+      "id": 902150,
+      "time": "10:00",
+      "ots": null,
+      "periods": [
+        "1:0",
+        "2:3",
+        "0:1"
+      ],
+      "home": {
+        "clubId": 54,
+        "name": "Амур",
+        "logo": "logos/54.png",
+        "score": 3,
+        "conf": "east",
+        "rank": 5,
+        "prevRank": 5,
+        "pts": 17
+      },
+      "away": {
+        "clubId": 38,
+        "name": "Салават Юлаев",
+        "logo": "logos/38.png",
+        "score": 4,
+        "conf": "east",
+        "rank": 4,
+        "prevRank": 4,
+        "pts": 19
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "13:30",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Дмитрий Костенко",
+            "surname": "Костенко",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Григорий Кузьмин",
+              "surname": "Кузьмин",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Артём Шварёв",
+              "surname": "Шварёв",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "20:20",
+          "side": "home",
+          "score": "2:0",
+          "scorer": {
+            "name": "Вячеслав Войнов",
+            "surname": "Войнов",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Кирилл Пилипенко",
+              "surname": "Пилипенко",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Олег Ли",
+              "surname": "Ли",
+              "seasonGoals": 7
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "23:49",
+          "side": "home",
+          "score": "3:0",
+          "scorer": {
+            "name": "Фёдор Храпов",
+            "surname": "Храпов",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Рауль Акмальдинов",
+              "surname": "Акмальдинов",
+              "seasonGoals": 2
+            },
+            {
+              "name": "Кирилл Ураков",
+              "surname": "Ураков",
+              "seasonGoals": 1
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "26:09",
+          "side": "away",
+          "score": "3:1",
+          "scorer": {
+            "name": "Шелдон Ремпал",
+            "surname": "Ремпал",
+            "seasonGoals": 8
+          },
+          "assists": [
+            {
+              "name": "Девин Броссо",
+              "surname": "Броссо",
+              "seasonGoals": 2
+            },
+            {
+              "name": "Никита Зоркин",
+              "surname": "Зоркин",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "30:17",
+          "side": "away",
+          "score": "3:2",
+          "scorer": {
+            "name": "Александр Жаровский",
+            "surname": "Жаровский",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Девин Броссо",
+              "surname": "Броссо",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Ярослав Цулыгин",
+              "surname": "Цулыгин",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "31:08",
+          "side": "away",
+          "score": "3:3",
+          "scorer": {
+            "name": "Денис Орлович-Грудков",
+            "surname": "Орлович-Грудков",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Максим Кузнецов",
+              "surname": "Кузнецов",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Максим Загребин",
+              "surname": "Загребин",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "41:58",
+          "side": "away",
+          "score": "3:4",
+          "scorer": {
+            "name": "Мэттью Маджио",
+            "surname": "Маджио",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Александр Жаровский",
+              "surname": "Жаровский",
+              "seasonGoals": 7
+            },
+            {
+              "name": "Максим Загребин",
+              "surname": "Загребин",
+              "seasonGoals": 6
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902149,
+      "time": "13:30",
+      "ots": null,
+      "periods": [
+        "0:0",
+        "0:0",
+        "0:1"
+      ],
+      "home": {
+        "clubId": 29,
+        "name": "Сибирь",
+        "logo": "logos/29.png",
+        "score": 0,
+        "conf": "east",
+        "rank": 7,
+        "prevRank": 7,
+        "pts": 15
+      },
+      "away": {
+        "clubId": 198,
+        "name": "Барыс",
+        "logo": "logos/198.png",
+        "score": 1,
+        "conf": "east",
+        "rank": 2,
+        "prevRank": 2,
+        "pts": 20
+      },
+      "goals": [
+        {
+          "period": 3,
+          "time": "47:16",
+          "side": "away",
+          "score": "0:1",
+          "scorer": {
+            "name": "Мэйсон Морелли",
+            "surname": "Морелли",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Логан Дэй",
+              "surname": "Дэй",
+              "seasonGoals": 11
+            },
+            {
+              "name": "Кирилл Ляпунов",
+              "surname": "Ляпунов",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902148,
+      "time": "17:00",
+      "ots": null,
+      "periods": [
+        "0:3",
+        "3:2",
+        "0:1"
+      ],
+      "home": {
+        "clubId": 451,
+        "name": "ХК Сочи",
+        "logo": "logos/451.png",
+        "score": 3,
+        "conf": "west",
+        "rank": 11,
+        "prevRank": 11,
+        "pts": 6
+      },
+      "away": {
+        "clubId": 1,
+        "name": "Локомотив",
+        "logo": "logos/1.png",
+        "score": 6,
+        "conf": "west",
+        "rank": 1,
+        "prevRank": 2,
+        "pts": 24
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "08:42",
+          "side": "away",
+          "score": "0:1",
+          "scorer": {
+            "name": "Джованни Фьоре",
+            "surname": "Фьоре",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Степан Фальковский",
+              "surname": "Фальковский",
+              "seasonGoals": 1
+            },
+            {
+              "name": "Никита Кирьянов",
+              "surname": "Кирьянов",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "13:47",
+          "side": "away",
+          "score": "0:2",
+          "scorer": {
+            "name": "Алексей Береглазов",
+            "surname": "Береглазов",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Денис Алексеев",
+              "surname": "Алексеев",
+              "seasonGoals": 4
+            },
+            {
+              "name": "Джованни Фьоре",
+              "surname": "Фьоре",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "18:41",
+          "side": "away",
+          "score": "0:3",
+          "scorer": {
+            "name": "Артур Каюмов",
+            "surname": "Каюмов",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Максим Шалунов",
+              "surname": "Шалунов",
+              "seasonGoals": 4
+            },
+            {
+              "name": "Алексей Береглазов",
+              "surname": "Береглазов",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "21:36",
+          "side": "away",
+          "score": "0:4",
+          "scorer": {
+            "name": "Денис Алексеев",
+            "surname": "Алексеев",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Александр Полунин",
+              "surname": "Полунин",
+              "seasonGoals": 2
+            },
+            {
+              "name": "Степан Фальковский",
+              "surname": "Фальковский",
+              "seasonGoals": 2
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "25:39",
+          "side": "home",
+          "score": "1:4",
+          "scorer": {
+            "name": "Денис Венгрыжановский",
+            "surname": "Венгрыжановский",
+            "seasonGoals": 6
+          },
+          "assists": [],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "33:22",
+          "side": "home",
+          "score": "2:4",
+          "scorer": {
+            "name": "Дмитрий Кагарлицкий",
+            "surname": "Кагарлицкий",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Тимур Хафизов",
+              "surname": "Хафизов",
+              "seasonGoals": 1
+            },
+            {
+              "name": "Тимур Ахияров",
+              "surname": "Ахияров",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "35:09",
+          "side": "home",
+          "score": "3:4",
+          "scorer": {
+            "name": "Тимур Хафизов",
+            "surname": "Хафизов",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Тимур Ахияров",
+              "surname": "Ахияров",
+              "seasonGoals": 6
+            },
+            {
+              "name": "Никита Гусев",
+              "surname": "Гусев",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "39:28",
+          "side": "away",
+          "score": "3:5",
+          "scorer": {
+            "name": "Александр Елесин",
+            "surname": "Елесин",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Джованни Фьоре",
+              "surname": "Фьоре",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": "sh",
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "59:57",
+          "side": "away",
+          "score": "3:6",
+          "scorer": {
+            "name": "Александр Радулов",
+            "surname": "Радулов",
+            "seasonGoals": 8
+          },
+          "assists": [
+            {
+              "name": "Максим Шалунов",
+              "surname": "Шалунов",
+              "seasonGoals": 5
+            },
+            {
+              "name": "Андрей Сергеев",
+              "surname": "Сергеев",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "intro",
+      "text": "Итоги игрового дня КХЛ, 17 октября. Сыграно 3 матча.",
+      "voice": "voice/2026-10-17-intro.mp3",
+      "voiceFrames": 145,
+      "frames": 169
+    },
+    {
+      "id": "m902150",
+      "type": "match",
+      "matchId": 902150,
+      "text": "Амур — Салават Юлаев, 3:4. Салават Юлаев отыгрывается, уступая 0:3, и побеждает. Победную шайбу забрасывает Мэттью Маджио. Салават Юлаев — 4-е место на Востоке, 19 очков.",
+      "voice": "voice/2026-10-17-m902150.mp3",
+      "voiceFrames": 419,
+      "frames": 443
+    },
+    {
+      "id": "m902149",
+      "type": "match",
+      "matchId": 902149,
+      "text": "Сибирь — Барыс, 0:1. Барыс побеждает всухую. Победную шайбу забрасывает Мэйсон Морелли. Барыс — 2-е место на Востоке, 20 очков.",
+      "voice": "voice/2026-10-17-m902149.mp3",
+      "voiceFrames": 305,
+      "frames": 329
+    },
+    {
+      "id": "m902148",
+      "type": "match",
+      "matchId": 902148,
+      "text": "ХК Сочи — Локомотив, 3:6. Победную шайбу забрасывает Денис Алексеев. Локомотив поднимается на 1-е место на Западе.",
+      "voice": "voice/2026-10-17-m902148.mp3",
+      "voiceFrames": 263,
+      "frames": 287
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "text": "Таблицы конференций — завтра утром в карусели. Подписывайтесь, чтобы не пропустить!",
+      "voice": "voice/2026-10-17-outro.mp3",
+      "voiceFrames": 157,
+      "frames": 181
+    }
+  ],
+  "music": "music/track.mp3",
+  "caption": "🏒 Итоги игрового дня КХЛ, 17 октября\n\nАмур — Салават Юлаев 3:4\nСибирь — Барыс 0:1\nХК Сочи — Локомотив 3:6\n\nТаблицы конференций — завтра в 7:00 в карусели.\n\n#КХЛ #хоккей #KHL #итогидня #Амур #СалаватЮлаев #Сибирь #Барыс #ХКСочи #Локомотив"
+}
