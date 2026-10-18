@@ -84,3 +84,10 @@ export function moscowNow() {
   const msk = new Date(Date.now() + 3 * 60 * 60 * 1000);
   return msk.toISOString().replace(/\.\d+Z$/, "+03:00");
 }
+
+// Статус матча из календаря: идёт, завершён или ещё не начался.
+export function gameStatus(g) {
+  if (g.isOnline) return "live";
+  if (g.homeScore !== undefined && g.homeScore !== "") return "final";
+  return "scheduled";
+}

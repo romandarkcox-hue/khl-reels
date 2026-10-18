@@ -12,7 +12,7 @@ import {
   downloadLogos,
   fetchStandings,
 } from "./fetch-standings.mjs";
-import { moscowNow, openSession, restPost, TOURNAMENT } from "./khl.mjs";
+import { gameStatus, moscowNow, openSession, restPost, TOURNAMENT } from "./khl.mjs";
 import { loadPreviousSnapshot } from "./post-text.mjs";
 
 const REVIEW_PATH = join(PUBLIC_DIR, "review.json");
@@ -21,12 +21,6 @@ function addDays(isoDay, days) {
   const d = new Date(`${isoDay}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
-}
-
-function gameStatus(g) {
-  if (g.isOnline) return "live";
-  if (g.homeScore !== undefined && g.homeScore !== "") return "final";
-  return "scheduled";
 }
 
 // "Костенко Дмитрий(2)" -> { name: "Дмитрий Костенко", surname: "Костенко", seasonGoals: 2 }
