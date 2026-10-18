@@ -1,6 +1,8 @@
 # Утренняя карусель: каждый день около 7:00 по Москве.
 # Таблица КХЛ → две картинки и подпись → альбом в Telegram на проверку.
 # Снимок таблицы дня коммитится в data/history/ (нужен завтрашнему посту).
+# Запускают два будильника: расписание GitHub и cron-job.org (GitHub иногда
+# пропускает запуски). Карусель за день отправляется один раз: метка data/cards/ГГГГ-ММ-ДД.
 
 name: Карусель 7:00
 
@@ -10,6 +12,11 @@ on:
     # перегружен и запуски опаздывают или пропадают.
     - cron: "45 3 * * *"
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Отправить заново, даже если карусель сегодня уже была"
+        type: boolean
+        default: false
 
 # Не даём ручному запуску и запуску по расписанию идти одновременно.
 concurrency:
@@ -26,8 +33,21 @@ jobs:
     steps:
       - name: Забрать код
         uses: actions/checkout@v7
+        with:
+          ref: main # свежий main, чтобы увидеть метку, поставленную соседним запуском
+
+      - name: Карусель сегодня уже отправлена?
+        id: done
+        run: |
+          DAY="$(TZ=Europe/Moscow date +%F)"
+          echo "day=$DAY" >> "$GITHUB_OUTPUT"
+          if [ -f "data/cards/$DAY" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Метка data/cards/$DAY есть, ничего не делаю."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Установить Node.js
+        if: steps.done.outputs.skip != 'true'
         uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -37,32 +57,35 @@ jobs:
             video/package-lock.json
 
       - name: Установить зависимости
+        if: steps.done.outputs.skip != 'true'
         run: |
           npm ci
           npm ci --prefix video
 
       - name: Картинки, подпись и отправка в Telegram
+        if: steps.done.outputs.skip != 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: npm run cards
 
-      - name: Закоммитить снимок таблицы
+      - name: Закоммитить снимок таблицы и метку «карусель отправлена»
+        if: steps.done.outputs.skip != 'true'
+        env:
+          DAY: ${{ steps.done.outputs.day }}
         run: |
+          mkdir -p data/cards
+          date -u +%FT%TZ > "data/cards/$DAY"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/history
-          if git diff --cached --quiet; then
-            echo "Снимок не изменился, коммитить нечего."
-            exit 0
-          fi
-          git commit -m "Снимок таблицы за $(TZ=Europe/Moscow date +%F)"
+          git add data/history data/cards
+          git commit -m "Снимок таблицы за $DAY"
           git pull --rebase
           git push
 
       - name: Сохранить картинки как файлы запуска
-        if: always()
+        if: steps.done.outputs.skip != 'true' || failure()
         uses: actions/upload-artifact@v7
         with:
           name: cards
