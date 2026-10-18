@@ -1,0 +1,733 @@
+{
+  "date": "2026-10-18",
+  "fetchedAt": "2026-10-18T21:48:31+03:00",
+  "total": 5,
+  "finished": 5,
+  "live": 0,
+  "lastStart": "17:10",
+  "matches": [
+    {
+      "id": 902151,
+      "time": "14:00",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 2,
+        "name": "ЦСКА",
+        "logo": "logos/2.png",
+        "score": 4,
+        "conf": "west",
+        "rank": 1,
+        "prevRank": 2,
+        "pts": 26
+      },
+      "away": {
+        "clubId": 71,
+        "name": "Нефтехимик",
+        "logo": "logos/71.png",
+        "score": 1,
+        "conf": "east",
+        "rank": 3,
+        "prevRank": 3,
+        "pts": 20
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "00:57",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Максим Мамин",
+            "surname": "Мамин",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Клим Костин",
+              "surname": "Костин",
+              "seasonGoals": 4
+            },
+            {
+              "name": "Джереми Рой",
+              "surname": "Рой",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "11:02",
+          "side": "away",
+          "score": "1:1",
+          "scorer": {
+            "name": "Герман Точилкин",
+            "surname": "Точилкин",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Александр Петунин",
+              "surname": "Петунин",
+              "seasonGoals": 7
+            },
+            {
+              "name": "Илья Пастухов",
+              "surname": "Пастухов",
+              "seasonGoals": 1
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "21:40",
+          "side": "home",
+          "score": "2:1",
+          "scorer": {
+            "name": "Максим Соркин",
+            "surname": "Соркин",
+            "seasonGoals": 8
+          },
+          "assists": [
+            {
+              "name": "Прохор Полтапов",
+              "surname": "Полтапов",
+              "seasonGoals": 5
+            },
+            {
+              "name": "Алекс Коттон",
+              "surname": "Коттон",
+              "seasonGoals": 6
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "39:07",
+          "side": "home",
+          "score": "3:1",
+          "scorer": {
+            "name": "Иван Дроздов",
+            "surname": "Дроздов",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Никита Нестеров",
+              "surname": "Нестеров",
+              "seasonGoals": 9
+            },
+            {
+              "name": "Роберт Хэмилтон",
+              "surname": "Хэмилтон",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "41:22",
+          "side": "home",
+          "score": "4:1",
+          "scorer": {
+            "name": "Денис Гурьянов",
+            "surname": "Гурьянов",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Иван Патрихаев",
+              "surname": "Патрихаев",
+              "seasonGoals": 2
+            },
+            {
+              "name": "Роберт Хэмилтон",
+              "surname": "Хэмилтон",
+              "seasonGoals": 6
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902152,
+      "time": "14:00",
+      "ots": "SO",
+      "periods": [],
+      "home": {
+        "clubId": 34,
+        "name": "Авангард",
+        "logo": "logos/34.png",
+        "score": 2,
+        "conf": "east",
+        "rank": 7,
+        "prevRank": 9,
+        "pts": 16
+      },
+      "away": {
+        "clubId": 25,
+        "name": "Трактор",
+        "logo": "logos/25.png",
+        "score": 1,
+        "conf": "east",
+        "rank": 10,
+        "prevRank": 10,
+        "pts": 14
+      },
+      "goals": [
+        {
+          "period": 3,
+          "time": "40:08",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Джошуа Ливо",
+            "surname": "Ливо",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Дамир Шарипзянов",
+              "surname": "Шарипзянов",
+              "seasonGoals": 1
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "49:07",
+          "side": "away",
+          "score": "1:1",
+          "scorer": {
+            "name": "Артемий Низамеев",
+            "surname": "Низамеев",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Андрей Светлаков",
+              "surname": "Светлаков",
+              "seasonGoals": 7
+            },
+            {
+              "name": "Григорий Дронов",
+              "surname": "Дронов",
+              "seasonGoals": 10
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 4,
+          "time": "65:00",
+          "side": "home",
+          "score": "2:1",
+          "scorer": {
+            "name": "Глеб Бурлака",
+            "surname": "Бурлака",
+            "seasonGoals": null
+          },
+          "assists": [],
+          "strength": null,
+          "shootout": true
+        }
+      ]
+    },
+    {
+      "id": 902154,
+      "time": "14:30",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 37,
+        "name": "Металлург Мг",
+        "logo": "logos/37.png",
+        "score": 4,
+        "conf": "east",
+        "rank": 1,
+        "prevRank": 1,
+        "pts": 29
+      },
+      "away": {
+        "clubId": 190,
+        "name": "Автомобилист",
+        "logo": "logos/190.png",
+        "score": 2,
+        "conf": "east",
+        "rank": 9,
+        "prevRank": 8,
+        "pts": 14
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "13:48",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Никита Коротков",
+            "surname": "Коротков",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Егор Коробкин",
+              "surname": "Коробкин",
+              "seasonGoals": 4
+            },
+            {
+              "name": "Люк Джонсон",
+              "surname": "Джонсон",
+              "seasonGoals": 7
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "22:20",
+          "side": "away",
+          "score": "1:1",
+          "scorer": {
+            "name": "Максим Денежкин",
+            "surname": "Денежкин",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Артём Каштанов",
+              "surname": "Каштанов",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Дмитрий Юдин",
+              "surname": "Юдин",
+              "seasonGoals": 1
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "26:25",
+          "side": "away",
+          "score": "1:2",
+          "scorer": {
+            "name": "Максим Тарасов",
+            "surname": "Тарасов",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Кирилл Воробьёв",
+              "surname": "Воробьёв",
+              "seasonGoals": 1
+            },
+            {
+              "name": "Илья Карпухин",
+              "surname": "Карпухин",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "44:38",
+          "side": "home",
+          "score": "2:2",
+          "scorer": {
+            "name": "Нэйтан Тодд",
+            "surname": "Тодд",
+            "seasonGoals": 8
+          },
+          "assists": [
+            {
+              "name": "Артём Минулин",
+              "surname": "Минулин",
+              "seasonGoals": 5
+            },
+            {
+              "name": "Даниил Вовченко",
+              "surname": "Вовченко",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "51:36",
+          "side": "home",
+          "score": "3:2",
+          "scorer": {
+            "name": "Андрей Козлов",
+            "surname": "Козлов",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Валерий Орехов",
+              "surname": "Орехов",
+              "seasonGoals": 12
+            },
+            {
+              "name": "Александр Сиряцкий",
+              "surname": "Сиряцкий",
+              "seasonGoals": 6
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "58:22",
+          "side": "home",
+          "score": "4:2",
+          "scorer": {
+            "name": "Никита Михайлис",
+            "surname": "Михайлис",
+            "seasonGoals": 6
+          },
+          "assists": [
+            {
+              "name": "Руслан Исхаков",
+              "surname": "Исхаков",
+              "seasonGoals": 6
+            },
+            {
+              "name": "Александр Сиряцкий",
+              "surname": "Сиряцкий",
+              "seasonGoals": 7
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902155,
+      "time": "16:00",
+      "ots": "SO",
+      "periods": [],
+      "home": {
+        "clubId": 66,
+        "name": "Лада",
+        "logo": "logos/66.png",
+        "score": 1,
+        "conf": "west",
+        "rank": 10,
+        "prevRank": 10,
+        "pts": 9
+      },
+      "away": {
+        "clubId": 719,
+        "name": "Динамо М",
+        "logo": "logos/719.png",
+        "score": 2,
+        "conf": "west",
+        "rank": 9,
+        "prevRank": 9,
+        "pts": 16
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "13:08",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Евгений Грошев",
+            "surname": "Грошев",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Арсен Таймазов",
+              "surname": "Таймазов",
+              "seasonGoals": 1
+            },
+            {
+              "name": "Никита Сетдиков",
+              "surname": "Сетдиков",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "27:22",
+          "side": "away",
+          "score": "1:1",
+          "scorer": {
+            "name": "Джордан Уил",
+            "surname": "Уил",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Даниил Пыленков",
+              "surname": "Пыленков",
+              "seasonGoals": 10
+            },
+            {
+              "name": "Ник Меркли",
+              "surname": "Меркли",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 4,
+          "time": "65:00",
+          "side": "away",
+          "score": "1:2",
+          "scorer": {
+            "name": "Дилан Сикьюра",
+            "surname": "Сикьюра",
+            "seasonGoals": null
+          },
+          "assists": [],
+          "strength": null,
+          "shootout": true
+        }
+      ]
+    },
+    {
+      "id": 902153,
+      "time": "17:10",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 207,
+        "name": "Динамо Мн",
+        "logo": "logos/207.png",
+        "score": 1,
+        "conf": "west",
+        "rank": 7,
+        "prevRank": 7,
+        "pts": 17
+      },
+      "away": {
+        "clubId": 53,
+        "name": "Ак Барс",
+        "logo": "logos/53.png",
+        "score": 4,
+        "conf": "east",
+        "rank": 5,
+        "prevRank": 6,
+        "pts": 19
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "04:31",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Илья Усов",
+            "surname": "Усов",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Ксавье Уэлле",
+              "surname": "Уэлле",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Владимир Алистров",
+              "surname": "Алистров",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "10:52",
+          "side": "away",
+          "score": "1:1",
+          "scorer": {
+            "name": "Альберт Яруллин",
+            "surname": "Яруллин",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Кирилл Семёнов",
+              "surname": "Семёнов",
+              "seasonGoals": 8
+            },
+            {
+              "name": "Семён Терехов",
+              "surname": "Терехов",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "16:51",
+          "side": "away",
+          "score": "1:2",
+          "scorer": {
+            "name": "Денис Зернов",
+            "surname": "Зернов",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Григорий Денисенко",
+              "surname": "Денисенко",
+              "seasonGoals": 8
+            },
+            {
+              "name": "Никита Лямкин",
+              "surname": "Лямкин",
+              "seasonGoals": 9
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "33:04",
+          "side": "away",
+          "score": "1:3",
+          "scorer": {
+            "name": "Алексей Бывальцев",
+            "surname": "Бывальцев",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Денис Комков",
+              "surname": "Комков",
+              "seasonGoals": 1
+            },
+            {
+              "name": "Альберт Яруллин",
+              "surname": "Яруллин",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "59:42",
+          "side": "away",
+          "score": "1:4",
+          "scorer": {
+            "name": "Митчелл Миллер",
+            "surname": "Миллер",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Денис Зернов",
+              "surname": "Зернов",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "intro",
+      "text": "Итоги игрового дня КХЛ, 18 октября. Сыграно 5 матчей.",
+      "voice": "voice/2026-10-18-intro.mp3",
+      "voiceFrames": 150,
+      "frames": 174
+    },
+    {
+      "id": "m902151",
+      "type": "match",
+      "matchId": 902151,
+      "text": "ЦСКА — Нефтехимик, 4:1. Победную шайбу забрасывает Максим Соркин. ЦСКА поднимается на 1-е место на Западе.",
+      "voice": "voice/2026-10-18-m902151.mp3",
+      "voiceFrames": 252,
+      "frames": 276
+    },
+    {
+      "id": "m902152",
+      "type": "match",
+      "matchId": 902152,
+      "text": "Авангард — Трактор, 2:1 по буллитам. Победный буллит реализует Глеб Бурлака. Авангард поднимается на 7-е место на Востоке.",
+      "voice": "voice/2026-10-18-m902152.mp3",
+      "voiceFrames": 265,
+      "frames": 289
+    },
+    {
+      "id": "m902154",
+      "type": "match",
+      "matchId": 902154,
+      "text": "Металлург Мг — Автомобилист, 4:2. Победную шайбу забрасывает Андрей Козлов. Металлург Мг — 1-е место на Востоке, 29 очков.",
+      "voice": "voice/2026-10-18-m902154.mp3",
+      "voiceFrames": 316,
+      "frames": 340
+    },
+    {
+      "id": "m902155",
+      "type": "match",
+      "matchId": 902155,
+      "text": "Лада — Динамо М, 1:2 по буллитам. Победный буллит реализует Дилан Сикьюра. Динамо М — 9-е место на Западе, 16 очков.",
+      "voice": "voice/2026-10-18-m902155.mp3",
+      "voiceFrames": 329,
+      "frames": 353
+    },
+    {
+      "id": "m902153",
+      "type": "match",
+      "matchId": 902153,
+      "text": "Динамо Мн — Ак Барс, 1:4. Победную шайбу забрасывает Денис Зернов. Ак Барс поднимается на 5-е место на Востоке.",
+      "voice": "voice/2026-10-18-m902153.mp3",
+      "voiceFrames": 292,
+      "frames": 316
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "text": "Таблицы конференций — завтра утром в карусели. Подписывайтесь, чтобы не пропустить!",
+      "voice": "voice/2026-10-18-outro.mp3",
+      "voiceFrames": 157,
+      "frames": 181
+    }
+  ],
+  "music": "music/track.mp3",
+  "caption": "🏒 Итоги игрового дня КХЛ, 18 октября\n\nЦСКА — Нефтехимик 4:1\nАвангард — Трактор 2:1 по буллитам\nМеталлург Мг — Автомобилист 4:2\nЛада — Динамо М 1:2 по буллитам\nДинамо Мн — Ак Барс 1:4\n\nТаблицы конференций — завтра в 7:00 в карусели.\n\n#КХЛ #хоккей #KHL #итогидня #ЦСКА #Нефтехимик #Авангард #Трактор #МеталлургМг #Автомобилист #Лада #ДинамоМ #ДинамоМн #АкБарс"
+}
