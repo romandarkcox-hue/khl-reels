@@ -13,6 +13,7 @@ import { moscowNow } from "./khl.mjs";
 import { writeReviewScript } from "./review-script.mjs";
 import { sendMessage, sendVideo } from "./send-telegram.mjs";
 import { hasTtsKey, synthesize } from "./tts-yandex.mjs";
+import { proportionalTimings, wordTimings } from "./word-timings.mjs";
 
 const VIDEO_DIR = join(PUBLIC_DIR, "..");
 const OUT_DIR = join(VIDEO_DIR, "out");
@@ -73,8 +74,18 @@ for (const scene of script.scenes) {
       }
     }
   }
+  // Время каждого слова для субтитров. Если Whisper не справился, делим по длине слов.
+  const voiceMs = voiceFrames ? (voiceFrames / FPS) * 1000 : (seconds - 1) * 1000;
+  let words = proportionalTimings(scene.text, voiceMs);
+  if (voice) {
+    try {
+      words = await wordTimings(join(PUBLIC_DIR, voice), scene.text, voiceMs);
+    } catch (err) {
+      console.warn(`   субтитры сцены ${scene.id}: Whisper не сработал (${err.message}), время по длине слов`);
+    }
+  }
   seconds = Math.max(seconds, MIN_SECONDS[scene.type]);
-  scenes.push({ ...scene, voice, voiceFrames, frames: Math.ceil(seconds * FPS) });
+  scenes.push({ ...scene, voice, voiceFrames, words, frames: Math.ceil(seconds * FPS) });
 }
 
 // Ролик с «дырой» в озвучке не собираем и не отправляем.

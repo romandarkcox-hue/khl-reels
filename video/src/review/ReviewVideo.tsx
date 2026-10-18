@@ -67,7 +67,7 @@ export const ReviewVideo: React.FC<ReviewVideoProps> = ({ review }) => {
               {scene.type === "intro" ? <Intro review={review} /> : null}
               {scene.type === "match" && match ? <MatchScene match={match} frames={scene.frames} /> : null}
               {scene.type === "outro" ? <Outro /> : null}
-              <Subtitles text={scene.text} frames={scene.voiceFrames ?? scene.frames} />
+              <Subtitles words={scene.words} matches={review.matches} />
               {scene.voice ? <Audio src={staticFile(scene.voice)} /> : null}
             </Series.Sequence>
           );

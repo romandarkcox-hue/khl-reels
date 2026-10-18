@@ -38,6 +38,13 @@ export type Match = {
   goals: Goal[];
 };
 
+// Слово озвучки и когда оно звучит (мс от начала сцены).
+export type Word = {
+  text: string;
+  startMs: number;
+  endMs: number;
+};
+
 export type Scene = {
   id: string;
   type: "intro" | "match" | "outro";
@@ -45,6 +52,7 @@ export type Scene = {
   text: string;
   voice: string | null; // путь внутри public/
   voiceFrames: number | null; // длительность озвучки в кадрах
+  words?: Word[]; // время слов для субтитров (Whisper)
   frames: number;
 };
 
