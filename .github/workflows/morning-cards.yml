@@ -1,0 +1,81 @@
+# Утренняя карусель: каждый день около 7:00 по Москве.
+# Таблица КХЛ → две картинки и подпись → альбом в Telegram на проверку.
+# Снимок таблицы дня коммитится в data/history/ (нужен завтрашнему посту).
+
+name: Карусель 7:00
+
+on:
+  schedule:
+    # 03:45 UTC = 6:45 МСК. Не ровно в начале часа: в это время GitHub
+    # перегружен и запуски опаздывают или пропадают.
+    - cron: "45 3 * * *"
+  workflow_dispatch:
+
+# Не даём ручному запуску и запуску по расписанию идти одновременно.
+concurrency:
+  group: morning-cards
+  cancel-in-progress: false
+
+permissions:
+  contents: write # чтобы закоммитить снимок таблицы
+
+jobs:
+  cards:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Забрать код
+        uses: actions/checkout@v7
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            video/package-lock.json
+
+      - name: Установить зависимости
+        run: |
+          npm ci
+          npm ci --prefix video
+
+      - name: Картинки, подпись и отправка в Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npm run cards
+
+      - name: Закоммитить снимок таблицы
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/history
+          if git diff --cached --quiet; then
+            echo "Снимок не изменился, коммитить нечего."
+            exit 0
+          fi
+          git commit -m "Снимок таблицы за $(TZ=Europe/Moscow date +%F)"
+          git pull --rebase
+          git push
+
+      - name: Сохранить картинки как файлы запуска
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cards
+          path: video/out/
+          if-no-files-found: ignore
+
+      - name: Сообщить в Telegram о сбое
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=⚠️ Утренняя карусель не собралась. Подробности: ${RUN_URL}" > /dev/null
