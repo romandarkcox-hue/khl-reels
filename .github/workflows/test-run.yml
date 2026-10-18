@@ -1,0 +1,50 @@
+# Тестовый запуск на серверах GitHub (только вручную, кнопкой Run workflow).
+# Проверяет: пускает ли khl.ru зарубежный сервер, работает ли рендер Remotion
+# и отправка в Telegram. Снимок таблицы в репозиторий НЕ коммитит.
+
+name: Тест на сервере
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Забрать код
+        uses: actions/checkout@v4
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            video/package-lock.json
+
+      - name: Установить зависимости
+        run: |
+          npm ci
+          npm ci --prefix video
+
+      - name: Где находится сервер
+        run: curl -s https://ipinfo.io/json || true
+
+      - name: Проверка khl.ru (таблица и логотипы)
+        run: npm run standings
+
+      - name: Картинки и отправка в Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: npm run cards
+
+      - name: Сохранить картинки как файлы запуска
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cards
+          path: video/out/
+          if-no-files-found: ignore
