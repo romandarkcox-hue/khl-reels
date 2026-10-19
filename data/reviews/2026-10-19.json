@@ -1,0 +1,667 @@
+{
+  "date": "2026-10-19",
+  "fetchedAt": "2026-10-19T22:31:08+03:00",
+  "total": 4,
+  "finished": 4,
+  "live": 0,
+  "lastStart": "19:30",
+  "matches": [
+    {
+      "id": 902156,
+      "time": "12:00",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 54,
+        "name": "Амур",
+        "logo": "logos/54.png",
+        "score": 5,
+        "conf": "east",
+        "rank": 4,
+        "prevRank": 6,
+        "pts": 19
+      },
+      "away": {
+        "clubId": 198,
+        "name": "Барыс",
+        "logo": "logos/198.png",
+        "score": 2,
+        "conf": "east",
+        "rank": 2,
+        "prevRank": 2,
+        "pts": 20
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "10:28",
+          "side": "away",
+          "score": "0:1",
+          "scorer": {
+            "name": "Ансар Шайхмедденов",
+            "surname": "Шайхмедденов",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Чейз Эванс Приски",
+              "surname": "Приски",
+              "seasonGoals": 10
+            },
+            {
+              "name": "Кирилл Савицкий",
+              "surname": "Савицкий",
+              "seasonGoals": 2
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "11:39",
+          "side": "home",
+          "score": "1:1",
+          "scorer": {
+            "name": "Ярослав Лихачёв",
+            "surname": "Лихачёв",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Иван Чехович",
+              "surname": "Чехович",
+              "seasonGoals": 1
+            },
+            {
+              "name": "Максим Кровяков",
+              "surname": "Кровяков",
+              "seasonGoals": 1
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "21:08",
+          "side": "home",
+          "score": "2:1",
+          "scorer": {
+            "name": "Олег Ли",
+            "surname": "Ли",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Виталий Абрамов",
+              "surname": "Абрамов",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "32:53",
+          "side": "home",
+          "score": "3:1",
+          "scorer": {
+            "name": "Кирилл Петьков",
+            "surname": "Петьков",
+            "seasonGoals": 2
+          },
+          "assists": [],
+          "strength": "sh",
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "38:22",
+          "side": "home",
+          "score": "4:1",
+          "scorer": {
+            "name": "Ярослав Лихачёв",
+            "surname": "Лихачёв",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Кирилл Пилипенко",
+              "surname": "Пилипенко",
+              "seasonGoals": 4
+            },
+            {
+              "name": "Виталий Абрамов",
+              "surname": "Абрамов",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "47:26",
+          "side": "away",
+          "score": "4:2",
+          "scorer": {
+            "name": "Джастин Бэйли",
+            "surname": "Бэйли",
+            "seasonGoals": 11
+          },
+          "assists": [
+            {
+              "name": "Логан Дэй",
+              "surname": "Дэй",
+              "seasonGoals": 12
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "51:50",
+          "side": "home",
+          "score": "5:2",
+          "scorer": {
+            "name": "Ярослав Лихачёв",
+            "surname": "Лихачёв",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Иван Климович",
+              "surname": "Климович",
+              "seasonGoals": 1
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902159,
+      "time": "12:30",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 418,
+        "name": "Адмирал",
+        "logo": "logos/418.png",
+        "score": 2,
+        "conf": "east",
+        "rank": 9,
+        "prevRank": 11,
+        "pts": 15
+      },
+      "away": {
+        "clubId": 38,
+        "name": "Салават Юлаев",
+        "logo": "logos/38.png",
+        "score": 0,
+        "conf": "east",
+        "rank": 5,
+        "prevRank": 4,
+        "pts": 19
+      },
+      "goals": [
+        {
+          "period": 3,
+          "time": "41:03",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Борна Рендулич",
+            "surname": "Рендулич",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Иван Муранов",
+              "surname": "Муранов",
+              "seasonGoals": 2
+            },
+            {
+              "name": "Даниэль Усманов",
+              "surname": "Усманов",
+              "seasonGoals": 6
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "59:08",
+          "side": "home",
+          "score": "2:0",
+          "scorer": {
+            "name": "Иван Муранов",
+            "surname": "Муранов",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Егор Чезганов",
+              "surname": "Чезганов",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Никита Ефремов",
+              "surname": "Ефремов",
+              "seasonGoals": 2
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902157,
+      "time": "19:00",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 56,
+        "name": "Северсталь",
+        "logo": "logos/56.png",
+        "score": 4,
+        "conf": "west",
+        "rank": 3,
+        "prevRank": 3,
+        "pts": 24
+      },
+      "away": {
+        "clubId": 26,
+        "name": "Торпедо",
+        "logo": "logos/26.png",
+        "score": 1,
+        "conf": "west",
+        "rank": 4,
+        "prevRank": 4,
+        "pts": 21
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "00:25",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Иоаннис Калдис",
+            "surname": "Калдис",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Давид Думбадзе",
+              "surname": "Думбадзе",
+              "seasonGoals": 4
+            },
+            {
+              "name": "Иван Подшивалов",
+              "surname": "Подшивалов",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "16:01",
+          "side": "home",
+          "score": "2:0",
+          "scorer": {
+            "name": "Денис Ян",
+            "surname": "Ян",
+            "seasonGoals": 8
+          },
+          "assists": [
+            {
+              "name": "Руслан Абросимов",
+              "surname": "Абросимов",
+              "seasonGoals": 7
+            },
+            {
+              "name": "Никита Попугаев",
+              "surname": "Попугаев",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "29:52",
+          "side": "home",
+          "score": "3:0",
+          "scorer": {
+            "name": "Давид Думбадзе",
+            "surname": "Думбадзе",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Данил Веряев",
+              "surname": "Веряев",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "39:24",
+          "side": "home",
+          "score": "4:0",
+          "scorer": {
+            "name": "Иван Подшивалов",
+            "surname": "Подшивалов",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Тимофей Давыдов",
+              "surname": "Давыдов",
+              "seasonGoals": 6
+            },
+            {
+              "name": "Давид Думбадзе",
+              "surname": "Думбадзе",
+              "seasonGoals": 5
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "41:31",
+          "side": "away",
+          "score": "4:1",
+          "scorer": {
+            "name": "Богдан Конюшков",
+            "surname": "Конюшков",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Матвей Поляков",
+              "surname": "Поляков",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Даниил Сероух",
+              "surname": "Сероух",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902158,
+      "time": "19:30",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 451,
+        "name": "ХК Сочи",
+        "logo": "logos/451.png",
+        "score": 2,
+        "conf": "west",
+        "rank": 11,
+        "prevRank": 11,
+        "pts": 6
+      },
+      "away": {
+        "clubId": 568,
+        "name": "Драконы",
+        "logo": "logos/568.png",
+        "score": 5,
+        "conf": "west",
+        "rank": 6,
+        "prevRank": 6,
+        "pts": 20
+      },
+      "goals": [
+        {
+          "period": 1,
+          "time": "02:54",
+          "side": "away",
+          "score": "0:1",
+          "scorer": {
+            "name": "Ник Чичек",
+            "surname": "Чичек",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Михаил Котляревский",
+              "surname": "Котляревский",
+              "seasonGoals": 2
+            },
+            {
+              "name": "Тахир Мингачёв",
+              "surname": "Мингачёв",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 1,
+          "time": "03:32",
+          "side": "away",
+          "score": "0:2",
+          "scorer": {
+            "name": "Бретт Мюррэй",
+            "surname": "Мюррэй",
+            "seasonGoals": 7
+          },
+          "assists": [
+            {
+              "name": "Тёрнер Оттенбрайт",
+              "surname": "Оттенбрайт",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Райли Саттер",
+              "surname": "Саттер",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "24:24",
+          "side": "home",
+          "score": "1:2",
+          "scorer": {
+            "name": "Денис Венгрыжановский",
+            "surname": "Венгрыжановский",
+            "seasonGoals": 7
+          },
+          "assists": [
+            {
+              "name": "Матвей Гуськов",
+              "surname": "Гуськов",
+              "seasonGoals": 5
+            },
+            {
+              "name": "Егор Петухов",
+              "surname": "Петухов",
+              "seasonGoals": 4
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "28:40",
+          "side": "away",
+          "score": "1:3",
+          "scorer": {
+            "name": "Кейлен Эддисон",
+            "surname": "Эддисон",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Егор Соловьёв",
+              "surname": "Соловьёв",
+              "seasonGoals": 7
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "35:19",
+          "side": "away",
+          "score": "1:4",
+          "scorer": {
+            "name": "Никита Александров",
+            "surname": "Александров",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Нэйт Сукезе",
+              "surname": "Сукезе",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Николас Петан",
+              "surname": "Петан",
+              "seasonGoals": 7
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "41:21",
+          "side": "away",
+          "score": "1:5",
+          "scorer": {
+            "name": "Дэвид Чен",
+            "surname": "Чен",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Дмитрий Яшкин",
+              "surname": "Яшкин",
+              "seasonGoals": 3
+            },
+            {
+              "name": "Николас Петан",
+              "surname": "Петан",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "54:58",
+          "side": "home",
+          "score": "2:5",
+          "scorer": {
+            "name": "Денис Венгрыжановский",
+            "surname": "Венгрыжановский",
+            "seasonGoals": 8
+          },
+          "assists": [
+            {
+              "name": "Никита Гусев",
+              "surname": "Гусев",
+              "seasonGoals": 5
+            },
+            {
+              "name": "Тимур Ахияров",
+              "surname": "Ахияров",
+              "seasonGoals": 7
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        }
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "intro",
+      "text": "Итоги игрового дня КХЛ, 19 октября. Сыграно 4 матча.",
+      "voice": "voice/2026-10-19-intro.mp3",
+      "voiceFrames": 139,
+      "frames": 163
+    },
+    {
+      "id": "m902156",
+      "type": "match",
+      "matchId": 902156,
+      "text": "Амур — Барыс, 5:2. Ярослав Лихачёв оформляет хет-трик. Победную шайбу забрасывает Кирилл Петьков. Амур поднимается на 4-е место на Востоке.",
+      "voice": "voice/2026-10-19-m902156.mp3",
+      "voiceFrames": 296,
+      "frames": 320
+    },
+    {
+      "id": "m902159",
+      "type": "match",
+      "matchId": 902159,
+      "text": "Адмирал — Салават Юлаев, 2:0. Адмирал побеждает всухую. Победную шайбу забрасывает Борна Рендулич. Адмирал поднимается на 9-е место на Востоке.",
+      "voice": "voice/2026-10-19-m902159.mp3",
+      "voiceFrames": 302,
+      "frames": 326
+    },
+    {
+      "id": "m902157",
+      "type": "match",
+      "matchId": 902157,
+      "text": "Северсталь — Торпедо, 4:1. Победную шайбу забрасывает Денис Ян. Северсталь — 3-е место на Западе, 24 очка.",
+      "voice": "voice/2026-10-19-m902157.mp3",
+      "voiceFrames": 252,
+      "frames": 276
+    },
+    {
+      "id": "m902158",
+      "type": "match",
+      "matchId": 902158,
+      "text": "ХК Сочи — Драконы, 2:5. Денис Венгрыжановский оформляет дубль. Победную шайбу забрасывает Кейлен Эддисон. Драконы — 6-е место на Западе, 20 очков.",
+      "voice": "voice/2026-10-19-m902158.mp3",
+      "voiceFrames": 324,
+      "frames": 349
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "text": "Таблицы конференций — завтра утром в карусели. Подписывайтесь, чтобы не пропустить!",
+      "voice": "voice/2026-10-19-outro.mp3",
+      "voiceFrames": 145,
+      "frames": 169
+    }
+  ],
+  "music": "music/track.mp3",
+  "caption": "🏒 Итоги игрового дня КХЛ, 19 октября\n\nАмур — Барыс 5:2\nАдмирал — Салават Юлаев 2:0\nСеверсталь — Торпедо 4:1\nХК Сочи — Драконы 2:5\n\nТаблицы конференций — завтра в 7:00 в карусели.\n\n#КХЛ #хоккей #KHL #итогидня #Амур #Барыс #Адмирал #СалаватЮлаев #Северсталь #Торпедо #ХКСочи #Драконы"
+}
