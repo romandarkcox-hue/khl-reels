@@ -1,0 +1,375 @@
+{
+  "date": "2026-10-20",
+  "fetchedAt": "2026-10-20T22:50:43+03:00",
+  "total": 3,
+  "finished": 3,
+  "live": 0,
+  "lastStart": "19:30",
+  "matches": [
+    {
+      "id": 902160,
+      "time": "19:00",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 1,
+        "name": "Локомотив",
+        "logo": "logos/1.png",
+        "score": 0,
+        "conf": "west",
+        "rank": 2,
+        "prevRank": 2,
+        "pts": 24
+      },
+      "away": {
+        "clubId": 71,
+        "name": "Нефтехимик",
+        "logo": "logos/71.png",
+        "score": 1,
+        "conf": "east",
+        "rank": 2,
+        "prevRank": 3,
+        "pts": 22
+      },
+      "goals": [
+        {
+          "period": 3,
+          "time": "48:04",
+          "side": "away",
+          "score": "0:1",
+          "scorer": {
+            "name": "Андрей Ал. Белозёров",
+            "surname": "Белозёров",
+            "seasonGoals": 7
+          },
+          "assists": [
+            {
+              "name": "Дамир Жафяров",
+              "surname": "Жафяров",
+              "seasonGoals": 7
+            },
+            {
+              "name": "Александр Петунин",
+              "surname": "Петунин",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        }
+      ]
+    },
+    {
+      "id": 902161,
+      "time": "19:30",
+      "ots": "SO",
+      "periods": [],
+      "home": {
+        "clubId": 719,
+        "name": "Динамо М",
+        "logo": "logos/719.png",
+        "score": 2,
+        "conf": "west",
+        "rank": 9,
+        "prevRank": 9,
+        "pts": 17
+      },
+      "away": {
+        "clubId": 29,
+        "name": "Сибирь",
+        "logo": "logos/29.png",
+        "score": 3,
+        "conf": "east",
+        "rank": 7,
+        "prevRank": 8,
+        "pts": 17
+      },
+      "goals": [
+        {
+          "period": 2,
+          "time": "38:41",
+          "side": "home",
+          "score": "1:0",
+          "scorer": {
+            "name": "Даниил Пыленков",
+            "surname": "Пыленков",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Игорь Ожиганов",
+              "surname": "Ожиганов",
+              "seasonGoals": 4
+            },
+            {
+              "name": "Джордан Уил",
+              "surname": "Уил",
+              "seasonGoals": 7
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "42:37",
+          "side": "home",
+          "score": "2:0",
+          "scorer": {
+            "name": "Максим Летунов",
+            "surname": "Летунов",
+            "seasonGoals": 7
+          },
+          "assists": [
+            {
+              "name": "Джордан Уил",
+              "surname": "Уил",
+              "seasonGoals": 8
+            },
+            {
+              "name": "Даниил Пыленков",
+              "surname": "Пыленков",
+              "seasonGoals": 11
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "49:40",
+          "side": "away",
+          "score": "2:1",
+          "scorer": {
+            "name": "Александр Яремчук",
+            "surname": "Яремчук",
+            "seasonGoals": 4
+          },
+          "assists": [
+            {
+              "name": "Антон Косолапов",
+              "surname": "Косолапов",
+              "seasonGoals": 6
+            },
+            {
+              "name": "Архип Неколенко",
+              "surname": "Неколенко",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": "pp",
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "58:12",
+          "side": "away",
+          "score": "2:2",
+          "scorer": {
+            "name": "Александр Яремчук",
+            "surname": "Яремчук",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Антон Косолапов",
+              "surname": "Косолапов",
+              "seasonGoals": 7
+            },
+            {
+              "name": "Степан Никулин",
+              "surname": "Никулин",
+              "seasonGoals": 8
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 4,
+          "time": "65:00",
+          "side": "away",
+          "score": "2:3",
+          "scorer": {
+            "name": "Степан Никулин",
+            "surname": "Никулин",
+            "seasonGoals": null
+          },
+          "assists": [],
+          "strength": null,
+          "shootout": true
+        }
+      ]
+    },
+    {
+      "id": 902162,
+      "time": "19:30",
+      "ots": null,
+      "periods": [],
+      "home": {
+        "clubId": 24,
+        "name": "СКА",
+        "logo": "logos/24.png",
+        "score": 1,
+        "conf": "west",
+        "rank": 8,
+        "prevRank": 8,
+        "pts": 17
+      },
+      "away": {
+        "clubId": 190,
+        "name": "Автомобилист",
+        "logo": "logos/190.png",
+        "score": 3,
+        "conf": "east",
+        "rank": 8,
+        "prevRank": 9,
+        "pts": 16
+      },
+      "goals": [
+        {
+          "period": 2,
+          "time": "21:03",
+          "side": "away",
+          "score": "0:1",
+          "scorer": {
+            "name": "Александр Кадейкин",
+            "surname": "Кадейкин",
+            "seasonGoals": 5
+          },
+          "assists": [
+            {
+              "name": "Данил Гущин",
+              "surname": "Гущин",
+              "seasonGoals": 2
+            },
+            {
+              "name": "Дмитрий Юдин",
+              "surname": "Юдин",
+              "seasonGoals": 2
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 2,
+          "time": "30:44",
+          "side": "home",
+          "score": "1:1",
+          "scorer": {
+            "name": "Владислав Сёмин",
+            "surname": "Сёмин",
+            "seasonGoals": 2
+          },
+          "assists": [
+            {
+              "name": "Матвей Короткий",
+              "surname": "Короткий",
+              "seasonGoals": 7
+            },
+            {
+              "name": "Василий Глотов",
+              "surname": "Глотов",
+              "seasonGoals": 6
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "58:47",
+          "side": "away",
+          "score": "1:2",
+          "scorer": {
+            "name": "Максим Тарасов",
+            "surname": "Тарасов",
+            "seasonGoals": 3
+          },
+          "assists": [
+            {
+              "name": "Илья Карпухин",
+              "surname": "Карпухин",
+              "seasonGoals": 6
+            },
+            {
+              "name": "Кирилл Воробьёв",
+              "surname": "Воробьёв",
+              "seasonGoals": 2
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        },
+        {
+          "period": 3,
+          "time": "59:27",
+          "side": "away",
+          "score": "1:3",
+          "scorer": {
+            "name": "Роман Горбунов",
+            "surname": "Горбунов",
+            "seasonGoals": 1
+          },
+          "assists": [
+            {
+              "name": "Кирилл Воробьёв",
+              "surname": "Воробьёв",
+              "seasonGoals": 3
+            }
+          ],
+          "strength": null,
+          "shootout": false
+        }
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "intro",
+      "text": "Итоги игрового дня КХЛ, 20 октября. Сыграно 3 матча.",
+      "voice": "voice/2026-10-20-intro.mp3",
+      "voiceFrames": 131,
+      "frames": 155
+    },
+    {
+      "id": "m902160",
+      "type": "match",
+      "matchId": 902160,
+      "text": "Локомотив — Нефтехимик, 0:1. Нефтехимик побеждает всухую. Победную шайбу забрасывает Андрей Ал. Белозёров. Нефтехимик поднимается на 2-е место на Востоке.",
+      "voice": "voice/2026-10-20-m902160.mp3",
+      "voiceFrames": 343,
+      "frames": 367
+    },
+    {
+      "id": "m902161",
+      "type": "match",
+      "matchId": 902161,
+      "text": "Динамо М — Сибирь, 2:3 по буллитам. Сибирь отыгрывается, уступая 0:2, и побеждает. Александр Яремчук оформляет дубль. Победный буллит реализует Степан Никулин. Сибирь поднимается на 7-е место на Востоке.",
+      "voice": "voice/2026-10-20-m902161.mp3",
+      "voiceFrames": 388,
+      "frames": 412
+    },
+    {
+      "id": "m902162",
+      "type": "match",
+      "matchId": 902162,
+      "text": "СКА — Автомобилист, 1:3. Победную шайбу забрасывает Максим Тарасов. Автомобилист поднимается на 8-е место на Востоке.",
+      "voice": "voice/2026-10-20-m902162.mp3",
+      "voiceFrames": 233,
+      "frames": 270
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "text": "Таблицы конференций — завтра утром в карусели. Подписывайтесь, чтобы не пропустить!",
+      "voice": "voice/2026-10-20-outro.mp3",
+      "voiceFrames": 145,
+      "frames": 169
+    }
+  ],
+  "music": "music/track.mp3",
+  "caption": "🏒 Итоги игрового дня КХЛ, 20 октября\n\nЛокомотив — Нефтехимик 0:1\nДинамо М — Сибирь 2:3 по буллитам\nСКА — Автомобилист 1:3\n\nТаблицы конференций — завтра в 7:00 в карусели.\n\n#КХЛ #хоккей #KHL #итогидня #Локомотив #Нефтехимик #ДинамоМ #Сибирь #СКА #Автомобилист"
+}
