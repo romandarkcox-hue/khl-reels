@@ -2,11 +2,12 @@
 // и текст с итогами → Telegram-канал. Снимок таблицы дня пишется в data/history/.
 //
 // Запуск:  node scripts/make-evening.mjs [ГГГГ-ММ-ДД] [--partial] [--to-me | --no-send]
-//   по умолчанию сегодня по Москве; без --partial ждёт, пока закончатся все матчи;
+//   по умолчанию сегодня по Москве; без --partial ждёт, пока закончатся все матчи
+//   и заполнятся их протоколы (сразу после сирены протокол на сайте пустой);
 //   --to-me присылает пост в личку вместо канала, --no-send только рисует.
 
 import { execSync } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { OUT_DIR, fetchDayMatches, renderDayCards } from "./day-cards.mjs";
@@ -16,6 +17,8 @@ import { buildFacts, loadPreviousSnapshot, writePostText } from "./post-text.mjs
 import { channelId, sendPost } from "./send-telegram.mjs";
 
 const VIDEO_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "video");
+// Появляется только после публикации в канал: по нему воркфлоу понимает, ставить ли метку дня.
+const POSTED_FLAG = join(OUT_DIR, "evening-posted");
 
 const args = process.argv.slice(2);
 const partial = args.includes("--partial");
@@ -24,6 +27,7 @@ const noSend = args.includes("--no-send");
 const day = args.find((a) => !a.startsWith("--")) ?? moscowNow().slice(0, 10);
 if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) fail(`дата должна быть в виде ГГГГ-ММ-ДД, а не «${day}»`);
 
+rmSync(POSTED_FLAG, { force: true });
 console.log(`1/4 Матчи и таблица за ${day}...`);
 const { matches, standings } = await fetchDayMatches(day, { withGoals: true });
 const played = matches.filter((m) => m.score);
@@ -34,6 +38,13 @@ if (!played.length) {
 }
 if (played.length < matches.length && !partial) {
   console.log("   ещё не все матчи закончились (для поста по сыгранным добавьте --partial).");
+  process.exit(0);
+}
+// В протоколе столько же голов, сколько в счёте (победный буллит тоже записан голом).
+const noProtocol = played.filter((m) => m.goals.length < m.score.home + m.score.away);
+if (noProtocol.length && !partial) {
+  const names = noProtocol.map((m) => `${m.home.name} — ${m.away.name}`).join(", ");
+  console.log(`   протоколы ещё не заполнены: ${names}. Жду (без ожидания: --partial).`);
   process.exit(0);
 }
 // Прошлый снимок читаем до сохранения сегодняшнего. Снимок дня пишем только
@@ -63,6 +74,7 @@ if (noSend) {
 } else {
   console.log(`4/4 Публикую ${toMe ? "вам в личку" : `в канал ${channelId}`}...`);
   await sendPost(files, text, toMe ? undefined : channelId);
+  if (!toMe) writeFileSync(POSTED_FLAG, new Date().toISOString() + "\n");
 }
 
 console.log("Готово:", [...files, join(OUT_DIR, "evening.txt")].join(", "));

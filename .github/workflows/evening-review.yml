@@ -118,6 +118,11 @@ jobs:
         env:
           DAY: ${{ steps.day.outputs.day }}
         run: |
+          # Скрипт мог выйти, не публикуя (протоколы матчей ещё не заполнены): тогда ждём следующей проверки.
+          if [ ! -f video/out/evening-posted ]; then
+            echo "Пост не опубликован, метку не ставлю."
+            exit 0
+          fi
           mkdir -p data/posted
           date -u +%FT%TZ > "data/posted/$DAY-evening"
           git config user.name "github-actions[bot]"
