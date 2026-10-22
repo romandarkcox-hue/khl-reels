@@ -1,10 +1,11 @@
-// Вечерний пост после последнего матча дня: счета матчей, таблицы «Запад» и «Восток»
-// и текст с итогами → Telegram-канал. Снимок таблицы дня пишется в data/history/.
+// Вечер после последнего матча дня → Telegram-канал, два поста:
+// 1) картинка со счетами и текст с описанием матчей; 2) таблицы «Запад» и «Восток».
+// Снимок таблицы дня пишется в data/history/.
 //
 // Запуск:  node scripts/make-evening.mjs [ГГГГ-ММ-ДД] [--partial] [--to-me | --no-send]
 //   по умолчанию сегодня по Москве; без --partial ждёт, пока закончатся все матчи
 //   и заполнятся их протоколы (сразу после сирены протокол на сайте пустой);
-//   --to-me присылает пост в личку вместо канала, --no-send только рисует.
+//   --to-me присылает посты в личку вместо канала, --no-send только рисует.
 
 import { execSync } from "node:child_process";
 import { rmSync, writeFileSync } from "node:fs";
@@ -13,7 +14,7 @@ import { fileURLToPath } from "node:url";
 import { OUT_DIR, fetchDayMatches, renderDayCards } from "./day-cards.mjs";
 import { HISTORY_DIR, saveStandings } from "./fetch-standings.mjs";
 import { fail, moscowNow } from "./khl.mjs";
-import { buildFacts, loadPreviousSnapshot, writePostText } from "./post-text.mjs";
+import { buildFacts, loadPreviousSnapshot, tablesText, writePostText } from "./post-text.mjs";
 import { channelId, sendPost } from "./send-telegram.mjs";
 
 const VIDEO_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "video");
@@ -53,28 +54,36 @@ const previous = loadPreviousSnapshot(HISTORY_DIR, day);
 saveStandings(standings, day, { writeSnapshot: !noSend && !toMe });
 
 console.log("2/4 Рисую картинки...");
-const files = renderDayCards("results", day, played);
+const resultFiles = renderDayCards("results", day, played);
+const tableFiles = [];
 for (const id of ["west", "east"]) {
   const out = join(OUT_DIR, `${id}.jpg`);
   execSync(`npx remotion still ${id} "${out}" --image-format=jpeg --jpeg-quality=95 --log=error`, {
     cwd: VIDEO_DIR,
     stdio: "inherit",
   });
-  files.push(out);
+  tableFiles.push(out);
 }
 
-console.log("3/4 Пишу текст поста...");
+console.log("3/4 Пишу тексты постов...");
 const facts = buildFacts(standings, previous, day, played);
 const { text, source } = await writePostText(facts);
+const tables = tablesText(day);
 writeFileSync(join(OUT_DIR, "evening.txt"), text + "\n");
-console.log(`   текст: ${source === "ai" ? "Claude API" : "шаблон"}${previous ? "" : ", прошлого снимка таблицы нет"}`);
+writeFileSync(join(OUT_DIR, "tables.txt"), tables + "\n");
+console.log(`   текст: ${source === "ai" ? "Claude API" : "шаблон"}`);
 
 if (noSend) {
   console.log("4/4 Отправку пропускаю (--no-send).");
 } else {
-  console.log(`4/4 Публикую ${toMe ? "вам в личку" : `в канал ${channelId}`}...`);
-  await sendPost(files, text, toMe ? undefined : channelId);
+  console.log(`4/4 Публикую ${toMe ? "вам в личку" : `в канал ${channelId}`}: итоги, затем таблицы...`);
+  const chat = toMe ? undefined : channelId;
+  await sendPost(resultFiles, text, chat);
+  await sendPost(tableFiles, tables, chat);
   if (!toMe) writeFileSync(POSTED_FLAG, new Date().toISOString() + "\n");
 }
 
-console.log("Готово:", [...files, join(OUT_DIR, "evening.txt")].join(", "));
+console.log(
+  "Готово:",
+  [...resultFiles, ...tableFiles, join(OUT_DIR, "evening.txt"), join(OUT_DIR, "tables.txt")].join(", "),
+);
