@@ -1,6 +1,6 @@
 // Будильники на cron-job.org: в нужное время просят GitHub запустить воркфлоу.
 // Расписание GitHub иногда пропускает запуски, а cron-job.org срабатывает точно.
-// Дубли не страшны: воркфлоу сами проверяют метки data/cards/ и data/reviews/.
+// Дубли не страшны: воркфлоу сами проверяют метки в data/posted/.
 //
 // Запуск:  node scripts/setup-cronjobs.mjs          создать или обновить задания
 //          node scripts/setup-cronjobs.mjs --list   показать задания и последний ответ
@@ -8,12 +8,7 @@
 // Нужны в .env: CRONJOB_API_KEY (cron-job.org → Settings → API) и
 // GH_DISPATCH_TOKEN (fine-grained токен GitHub: репозиторий khl-reels, Actions: Read and write).
 
-import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const envPath = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
-if (existsSync(envPath)) process.loadEnvFile(envPath);
+import "./env.mjs";
 
 const API = "https://api.cron-job.org";
 const REPO = "romandarkcox-hue/khl-reels";
@@ -21,10 +16,11 @@ const POST = 1; // код метода POST в API cron-job.org
 
 const JOBS = [
   {
-    title: "KHL: Карусель 6:45",
+    title: "KHL: Анонс 7:00",
+    oldTitles: ["KHL: Карусель 6:45"], // так задание называлось раньше
     workflow: "morning-cards.yml",
-    hours: [6],
-    minutes: [45],
+    hours: [7],
+    minutes: [0],
   },
   {
     // Те же проверки, что у расписания GitHub: с 20:10 до 01:50 МСК каждые 20 минут.
@@ -89,7 +85,7 @@ if (process.argv.includes("--list")) {
 
 if (!ghToken) throw new Error("Нет GH_DISPATCH_TOKEN в .env");
 for (const job of JOBS) {
-  const existing = jobs.find((j) => j.title === job.title);
+  const existing = jobs.find((j) => j.title === job.title || job.oldTitles?.includes(j.title));
   if (existing) {
     await api("PATCH", `/jobs/${existing.jobId}`, { job: jobBody(job) });
     console.log(`Обновлено: ${job.title}`);

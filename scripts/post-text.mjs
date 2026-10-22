@@ -1,49 +1,22 @@
-// Текст для поста-карусели: кто вчера играл, кто поднялся и опустился,
-// лидеры и борьба за плей-офф.
+// Текст вечернего поста (счета дня + таблицы конференций): итоги матчей,
+// кто поднялся и опустился, лидеры и борьба за плей-офф.
 //
 // Если в .env есть ANTHROPIC_API_KEY, текст пишет Claude по собранным фактам.
 // Без ключа (или при любой ошибке API) собирается текст по шаблону.
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const envPath = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
-if (existsSync(envPath)) process.loadEnvFile(envPath);
+import { join } from "node:path";
+import "./env.mjs";
 
 const MONTHS = [
   "января", "февраля", "марта", "апреля", "мая", "июня",
   "июля", "августа", "сентября", "октября", "ноября", "декабря",
 ];
-const CONF_WHERE = { west: "на Западе", east: "на Востоке" };
-
-function addDays(isoDay, days) {
-  const d = new Date(`${isoDay}T12:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
+const OTS_LABEL = { OT: " (ОТ)", SO: " (Б)" };
 
 function formatDay(isoDay) {
   const [, month, day] = isoDay.split("-").map(Number);
   return `${day} ${MONTHS[month - 1]}`;
-}
-
-// Сайт пишет даты матчей как "16 окт" или "30 сент".
-function isSameDay(label, isoDay) {
-  const [, month, day] = isoDay.split("-").map(Number);
-  const [labelDay, labelMonth = ""] = String(label).trim().split(/\s+/);
-  const want = MONTHS[month - 1];
-  const sameMonth =
-    labelMonth.slice(0, 3) === want.slice(0, 3) || (month === 5 && labelMonth.startsWith("ма"));
-  return Number(labelDay) === day && sameMonth;
-}
-
-function points(n) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return `${n} очко`;
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${n} очка`;
-  return `${n} очков`;
 }
 
 // Самый свежий снимок таблицы до указанного дня (или null, если его нет).
@@ -56,20 +29,25 @@ export function loadPreviousSnapshot(historyDir, isoDay) {
   return JSON.parse(readFileSync(join(historyDir, days.at(-1)), "utf8"));
 }
 
-export function buildFacts(standings, previous) {
-  const today = standings.fetchedAt.slice(0, 10);
-  const yesterday = addDays(today, -1);
+// day — игровой день, matches — его сыгранные матчи из day-cards.mjs.
+export function buildFacts(standings, previous, day, matches) {
   const teams = standings.conferences.flatMap((c) => c.teams.map((t) => ({ ...t, conf: c.id })));
-
-  // Вчерашние матчи (у каждой команды свои последние 5, поэтому убираем повторы).
-  const games = new Map();
-  for (const t of teams) {
-    for (const m of t.lastMatches ?? []) {
-      if (isSameDay(m.date, yesterday) && !games.has(m.id)) {
-        games.set(m.id, { home: m.home, away: m.away, score: m.score });
-      }
-    }
-  }
+  const games = matches.map((m) => ({
+    home: m.home.name,
+    away: m.away.name,
+    score: `${m.score.home}:${m.score.away}`,
+    ots: m.score.ots, // "OT" | "SO" | null
+    winner: m.score.home > m.score.away ? "home" : "away",
+    // Голы из протокола: кто, когда, при каком счёте (для описания матча).
+    goals: (m.goals ?? []).map((g) => ({
+      side: g.side,
+      scorer: g.scorer?.surname ?? null,
+      score: g.score,
+      period: g.period,
+      time: g.time,
+      shootout: g.shootout,
+    })),
+  }));
 
   // Движение в таблице относительно прошлого снимка.
   const moves = [];
@@ -105,9 +83,8 @@ export function buildFacts(standings, previous) {
   });
 
   return {
-    today,
-    yesterday,
-    games: [...games.values()],
+    day,
+    games,
     hasPrevious: Boolean(previous),
     rose: moves.filter((m) => m.to < m.from).sort((a, b) => (b.from - b.to) - (a.from - a.to)),
     fell: moves.filter((m) => m.to > m.from).sort((a, b) => (a.from - a.to) - (b.from - b.to)),
@@ -117,69 +94,92 @@ export function buildFacts(standings, previous) {
   };
 }
 
-function hashtags(facts) {
-  const tags = ["#КХЛ", "#хоккей", "#таблицаКХЛ", "#KHL"];
-  for (const c of facts.conferences) tags.push(`#${c.leader.name.replace(/[^A-Za-zА-Яа-яЁё0-9]/g, "")}`);
-  return [...new Set(tags)].join(" ");
+// Подпись к картинкам в Telegram — не больше 1024 знаков.
+export const MAX_POST_LENGTH = 1024;
+
+const HASHTAGS = "#КХЛ #хоккей #итогидня #таблицаКХЛ";
+
+// Только результаты: кто с кем сыграл и кто победил.
+// Самое интересное о матче по протоколу, по убыванию важности:
+// буллит или овертайм, камбэк, хет-трик или дубль, сухая победа или разгром,
+// иначе автор победной шайбы. Возвращает список коротких фраз.
+function matchHighlights(g) {
+  const goals = g.goals.filter((x) => !x.shootout);
+  const won = (x) => x.side === g.winner;
+  const [home, away] = g.score.split(":").map(Number);
+  const winGoals = Math.max(home, away);
+  const loseGoals = Math.min(home, away);
+  const out = [];
+
+  const so = g.goals.find((x) => x.shootout && won(x));
+  const ot = g.ots === "OT" ? goals.filter(won).at(-1) : null;
+  if (so?.scorer) out.push(`победный буллит — ${so.scorer}`);
+  else if (ot?.scorer) out.push(`в овертайме забил ${ot.scorer}`);
+
+  // Камбэк: насколько победитель уступал по ходу матча.
+  let worst = 0;
+  let worstScore = null;
+  for (const x of goals) {
+    const [h, a] = x.score.split(":").map(Number);
+    const behind = g.winner === "home" ? a - h : h - a;
+    if (behind > worst) [worst, worstScore] = [behind, x.score];
+  }
+  if (worst >= 2) out.push(`камбэк с ${worstScore}`);
+
+  const bySurname = new Map();
+  for (const x of goals) if (x.scorer) bySurname.set(x.scorer, (bySurname.get(x.scorer) ?? 0) + 1);
+  const [star, starGoals] = [...bySurname].sort((a, b) => b[1] - a[1])[0] ?? [];
+  if (starGoals >= 3) out.push(`хет-трик ${star}`);
+  else if (starGoals === 2) out.push(`дубль ${star}`);
+
+  if (loseGoals === 0) out.push("сухая победа");
+  else if (winGoals - loseGoals >= 4) out.push("разгром");
+
+  if (!so && !ot) {
+    // Победная шайба: гол, после которого у победителя стало на один больше, чем забил проигравший.
+    const gwg = goals.filter(won)[loseGoals];
+    if (gwg?.scorer && !out.some((p) => p.includes(gwg.scorer))) {
+      out.push(`победная шайба — ${gwg.scorer} (${gwg.period}-й период)`);
+    }
+  }
+  return out;
 }
 
-export function templateText(facts) {
-  const lines = [`🏒 Таблица КХЛ на ${formatDay(facts.today)}`, ""];
-
-  if (facts.games.length) {
-    lines.push(`Матчи ${formatDay(facts.yesterday)}:`);
-    for (const g of facts.games) lines.push(`${g.home} — ${g.away} ${g.score}`);
-  } else {
-    lines.push(`${formatDay(facts.yesterday)} матчей не было.`);
-  }
-  lines.push("");
-
-  if (facts.rose.length) {
-    lines.push(`📈 Поднялись: ${facts.rose.map((m) => `${m.name} (${m.from} → ${m.to})`).join(", ")}`);
-  }
-  if (facts.fell.length) {
-    lines.push(`📉 Опустились: ${facts.fell.map((m) => `${m.name} (${m.from} → ${m.to})`).join(", ")}`);
-  }
-  if (facts.enteredPlayoffZone.length) {
-    lines.push(`🔥 В зону плей-офф: ${facts.enteredPlayoffZone.join(", ")}`);
-  }
-  if (facts.leftPlayoffZone.length) {
-    lines.push(`❄️ Выпали из восьмёрки: ${facts.leftPlayoffZone.join(", ")}`);
-  }
-  if (facts.rose.length || facts.fell.length) lines.push("");
-
-  for (const c of facts.conferences) {
-    const gap = c.leader.pts - c.second.pts;
+function templateLines(facts, perMatch) {
+  const lines = [`🏒 Итоги дня КХЛ, ${formatDay(facts.day)}`, ""];
+  for (const g of facts.games) {
+    const winner = g.winner === "home" ? g.home : g.away;
+    const story = matchHighlights(g).slice(0, perMatch).join(", ");
     lines.push(
-      `👑 Лидер ${CONF_WHERE[c.id]}: ${c.leader.name}, ${points(c.leader.pts)}` +
-        (gap > 0
-          ? `. Ближайший преследователь — ${c.second.name} (−${gap})`
-          : `. Столько же набрал ${c.second.name}`),
+      `${g.home} — ${g.away} ${g.score}${OTS_LABEL[g.ots] ?? ""}`,
+      `✅ ${winner}${story ? `: ${story}` : ""}.`,
+      "",
     );
   }
-  for (const c of facts.conferences) {
-    if (!c.playoffLine) continue;
-    const { lastIn, firstOut } = c.playoffLine;
-    lines.push(
-      `⚔️ Борьба за 8-е место ${CONF_WHERE[c.id]}: ${lastIn.name} (${lastIn.pts}) и ${firstOut.name} (${firstOut.pts})`,
-    );
-  }
-
-  lines.push("", "Листайте карусель: Запад ➡️ Восток", "", hashtags(facts));
+  lines.push(HASHTAGS);
   return lines.join("\n");
 }
 
-const SYSTEM_PROMPT = `Ты ведёшь Instagram-аккаунт про хоккей и каждое утро пишешь подпись к посту-карусели с таблицами конференций КХЛ (картинка 1 — Запад, картинка 2 — Восток).
+// В загруженный день описания сокращаются, чтобы текст поместился под картинками.
+export function templateText(facts) {
+  for (const perMatch of [3, 2, 1, 0]) {
+    const text = templateLines(facts, perMatch);
+    if (text.length <= MAX_POST_LENGTH) return text;
+  }
+  return templateLines(facts, 0);
+}
 
-Пиши по-русски, живо, но без выдумок: используй только факты из присланных данных. Если чего-то в данных нет (например, сравнения со вчерашней таблицей), просто не упоминай это.
+const SYSTEM_PROMPT = `Ты ведёшь Telegram-канал про хоккей и каждый вечер после матчей КХЛ пишешь подпись к посту из картинок: счета матчей дня, затем таблицы конференций Запад и Восток.
+
+Пиши по-русски, коротко и без выдумок: используй только факты из присланных данных.
 
 Структура подписи:
-- первая строка: цепляющий заголовок с датой и эмодзи;
-- 3–5 коротких предложений: главное из вчерашних матчей, кто поднялся и кто опустился, интрига у линии плей-офф, лидеры;
-- счёт матчей можно дать коротким списком;
-- в конце строка «Листайте карусель: Запад ➡️ Восток» и 5–8 хэштегов (#КХЛ, #хоккей и названия команд из новостей дня).
+- первая строка: заголовок с датой и эмодзи;
+- по каждому матчу: команды, счёт (ots: OT — овертайм, SO — буллиты), кто победил и одна короткая живая фраза о самом интересном по голам (камбэк, дубль, победный гол, буллит);
+- никаких рассуждений про таблицу, лидеров, плей-офф и прочих очевидных вещей: только результаты;
+- в конце хэштеги: ${HASHTAGS}.
 
-Не больше 1500 символов. Выведи только текст подписи, без пояснений.`;
+Не больше 900 символов: текст должен поместиться в подпись к картинкам. Выведи только текст подписи, без пояснений.`;
 
 async function aiText(facts, draft) {
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
@@ -215,7 +215,9 @@ export async function writePostText(facts) {
   const draft = templateText(facts);
   if (!process.env.ANTHROPIC_API_KEY) return { text: draft, source: "template" };
   try {
-    return { text: await aiText(facts, draft), source: "ai" };
+    const text = await aiText(facts, draft);
+    if (text.length > MAX_POST_LENGTH) throw new Error(`текст длиннее ${MAX_POST_LENGTH} знаков`);
+    return { text, source: "ai" };
   } catch (err) {
     console.warn(`Claude API не сработал (${err.message}), беру текст по шаблону`);
     return { text: draft, source: "template" };

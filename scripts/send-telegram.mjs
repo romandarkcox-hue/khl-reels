@@ -4,12 +4,13 @@
 // Видео:  node scripts/send-telegram.mjs --video out/reel.mp4 "Подпись"
 // Альбом: node scripts/send-telegram.mjs --photos a.jpg b.jpg --caption "Подпись"
 //
-// Берёт TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID из переменных окружения
-// или из файла .env в корне проекта (если он есть).
+// Берёт TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID (личка пользователя) из переменных
+// окружения или из файла .env в корне проекта. TELEGRAM_CHANNEL_ID — канал для постов.
 
 import { existsSync, statSync, openAsBlob } from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { basename } from "node:path";
 import { fileURLToPath } from "node:url";
+import "./env.mjs";
 
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024; // лимит Telegram для ботов
 
@@ -18,12 +19,10 @@ function fail(message) {
   process.exit(1);
 }
 
-// На GitHub Actions файла .env нет, там значения придут из секретов.
-const envPath = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
-if (existsSync(envPath)) process.loadEnvFile(envPath);
-
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const chatId = process.env.TELEGRAM_CHAT_ID;
+export const channelId = process.env.TELEGRAM_CHANNEL_ID;
+const MAX_CAPTION = 1024; // лимит Telegram на подпись к фото
 if (!token) fail("не задан TELEGRAM_BOT_TOKEN (в .env или в окружении)");
 if (!chatId) fail("не задан TELEGRAM_CHAT_ID (в .env или в окружении)");
 
@@ -44,9 +43,9 @@ async function callTelegram(method, body) {
   return data.result;
 }
 
-export async function sendMessage(text) {
+export async function sendMessage(text, chat = chatId) {
   const form = new FormData();
-  form.append("chat_id", chatId);
+  form.append("chat_id", chat);
   form.append("text", text);
   return callTelegram("sendMessage", form);
 }
@@ -65,13 +64,22 @@ export async function sendVideo(videoPath, caption = "") {
   return callTelegram("sendVideo", form);
 }
 
+export async function sendPhoto(photoPath, caption = "", chat = chatId) {
+  if (!existsSync(photoPath)) fail(`файл не найден: ${photoPath}`);
+  const form = new FormData();
+  form.append("chat_id", chat);
+  if (caption) form.append("caption", caption);
+  form.append("photo", await openAsBlob(photoPath), basename(photoPath));
+  return callTelegram("sendPhoto", form);
+}
+
 // Несколько фото одним альбомом (2–10 штук). Подпись показывается под альбомом.
-export async function sendPhotos(photoPaths, caption = "") {
+export async function sendPhotos(photoPaths, caption = "", chat = chatId) {
   if (photoPaths.length < 2 || photoPaths.length > 10) {
     fail(`в альбоме должно быть от 2 до 10 фото, а передано ${photoPaths.length}`);
   }
   const form = new FormData();
-  form.append("chat_id", chatId);
+  form.append("chat_id", chat);
   const media = [];
   for (const [i, path] of photoPaths.entries()) {
     if (!existsSync(path)) fail(`файл не найден: ${path}`);
@@ -84,6 +92,16 @@ export async function sendPhotos(photoPaths, caption = "") {
   }
   form.append("media", JSON.stringify(media));
   return callTelegram("sendMediaGroup", form);
+}
+
+// Пост: одна картинка или альбом, текст подписью под ними. Если текст длиннее
+// лимита подписи, он уходит отдельным сообщением сразу после картинок.
+export async function sendPost(photoPaths, text, chat = chatId) {
+  if (!chat) fail("не задан чат для поста (TELEGRAM_CHANNEL_ID в .env?)");
+  const caption = text.length <= MAX_CAPTION ? text : "";
+  if (photoPaths.length === 1) await sendPhoto(photoPaths[0], caption, chat);
+  else await sendPhotos(photoPaths, caption, chat);
+  if (!caption) await sendMessage(text, chat);
 }
 
 // Запуск из командной строки

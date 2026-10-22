@@ -85,9 +85,23 @@ export function moscowNow() {
   return msk.toISOString().replace(/\.\d+Z$/, "+03:00");
 }
 
+const hasScore = (g) => g.homeScore !== undefined && g.homeScore !== "";
+
 // Статус матча из календаря: идёт, завершён или ещё не начался.
+// Сразу после финальной сирены, пока протокол не утверждён, счёт лежит
+// не в самом матче, а в g.online со статусом «Завершен».
 export function gameStatus(g) {
   if (g.isOnline) return "live";
-  if (g.homeScore !== undefined && g.homeScore !== "") return "final";
+  if (hasScore(g) || /^заверш/i.test(g.online?.status ?? "")) return "final";
   return "scheduled";
+}
+
+// Счёт завершённого матча: { home, away, ots } (ots = "OT" | "SO" | null).
+export function gameScore(g) {
+  const src = hasScore(g) ? g : (g.online ?? {});
+  return {
+    home: Number(src.homeScore),
+    away: Number(src.visitorScore),
+    ots: src.ots || g.ots || null,
+  };
 }

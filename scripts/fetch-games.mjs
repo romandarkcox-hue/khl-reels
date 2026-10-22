@@ -12,7 +12,7 @@ import {
   downloadLogos,
   fetchStandings,
 } from "./fetch-standings.mjs";
-import { gameStatus, moscowNow, openSession, restPost, TOURNAMENT } from "./khl.mjs";
+import { gameScore, gameStatus, moscowNow, openSession, restPost, TOURNAMENT } from "./khl.mjs";
 import { loadPreviousSnapshot } from "./post-text.mjs";
 
 const REVIEW_PATH = join(PUBLIC_DIR, "review.json");
@@ -37,7 +37,7 @@ function parsePlayer(raw) {
   };
 }
 
-function parseGoals(protocol, ots) {
+export function parseGoals(protocol, ots) {
   const goals = Object.values(protocol.goals ?? {}).flat();
   return goals
     .map((g) => ({
@@ -90,6 +90,7 @@ export async function fetchDay(isoDay) {
   const matches = [];
   for (const g of dayGames) {
     if (gameStatus(g) !== "final") continue;
+    const score = gameScore(g);
     const protocol = await restPost(session, "game/protocol", {
       "values[tournament]": TOURNAMENT,
       "values[gameid]": g.id,
@@ -97,11 +98,11 @@ export async function fetchDay(isoDay) {
     matches.push({
       id: g.id,
       time: g.time_format,
-      ots: g.ots || null, // "OT" | "SO" | null
+      ots: score.ots, // "OT" | "SO" | null
       periods: Array.isArray(g.scP) ? g.scP : [],
-      home: team(g.teama, g.homeScore),
-      away: team(g.teamb, g.visitorScore),
-      goals: parseGoals(protocol, g.ots),
+      home: team(g.teama, score.home),
+      away: team(g.teamb, score.away),
+      goals: parseGoals(protocol, score.ots),
     });
   }
 

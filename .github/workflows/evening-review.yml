@@ -1,7 +1,8 @@
-# Вечерний Reels «Итоги игрового дня».
+# Вечерний пост «Итоги дня»: счета матчей и таблицы «Запад» и «Восток» → Telegram-канал.
 # Каждые 20 минут с 20:30 до 01:10 МСК быстро проверяет календарь khl.ru.
-# Когда все матчи дня закончились, собирает ролик и шлёт его в Telegram.
-# Ролик за день делается один раз: метка — файл data/reviews/ГГГГ-ММ-ДД.json.
+# Когда все матчи дня закончились, публикует пост и коммитит снимок таблицы
+# data/history/ГГГГ-ММ-ДД.json. Пост за день выходит один раз:
+# метка data/posted/ГГГГ-ММ-ДД-evening.
 # Запускают два будильника: расписание GitHub и cron-job.org (GitHub иногда пропускает запуски).
 
 name: Итоги дня
@@ -18,11 +19,11 @@ on:
         description: "Игровой день ГГГГ-ММ-ДД (пусто = сегодня)"
         required: false
       partial:
-        description: "Собрать, даже если не все матчи закончились"
+        description: "Опубликовать, даже если не все матчи закончились"
         type: boolean
         default: false
       force:
-        description: "Собрать заново, даже если ролик за этот день уже был"
+        description: "Опубликовать заново, даже если пост за этот день уже был"
         type: boolean
         default: false
 
@@ -31,10 +32,10 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write # чтобы закоммитить метку data/reviews/
+  contents: write # чтобы закоммитить снимок таблицы и метку
 
 jobs:
-  review:
+  evening:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -57,25 +58,25 @@ jobs:
           DAY="${INPUT_DAY:-$(TZ=Europe/Moscow date -d '-5 hours' +%F)}"
           echo "day=$DAY" >> "$GITHUB_OUTPUT"
           echo "Игровой день: $DAY"
-          if [ -f "data/reviews/$DAY.json" ]; then
+          if [ -f "data/posted/$DAY-evening" ]; then
             echo "done=true" >> "$GITHUB_OUTPUT"
           fi
-          # После 01:00 МСК (22:00 UTC) — последний шанс за ночь: собираем,
+          # После 01:00 МСК (22:00 UTC) — последний шанс за ночь: публикуем,
           # даже если какой-то матч завис (например, перенесён).
           if [ "$(date -u +%H)" -ge 22 ] || [ "$(date -u +%H)" -lt 3 ]; then
             echo "last=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Ролик за этот день уже сделан
+      - name: Пост за этот день уже опубликован
         if: steps.day.outputs.done == 'true' && !inputs.force
-        run: echo "Метка data/reviews/${{ steps.day.outputs.day }}.json есть, ничего не делаю."
+        run: echo "Метка data/posted/${{ steps.day.outputs.day }}-evening есть, ничего не делаю."
 
       - name: Проверить матчи дня
         id: status
         if: steps.day.outputs.done != 'true' || inputs.force
         run: node scripts/review-status.mjs "${{ steps.day.outputs.day }}"
 
-      - name: Решить, собирать ли ролик
+      - name: Решить, публиковать ли пост
         id: go
         if: steps.status.outcome == 'success'
         env:
@@ -87,10 +88,10 @@ jobs:
           if [ "$FINISHED" -eq 0 ]; then
             echo "Завершённых матчей нет, жду следующей проверки."
           elif [ "$FINISHED" -eq "$TOTAL" ]; then
-            echo "Все матчи закончились, собираю ролик."
+            echo "Все матчи закончились, публикую пост."
             echo "build=true" >> "$GITHUB_OUTPUT"
           elif [ "$LAST" = "true" ] || [ "$PARTIAL_INPUT" = "true" ]; then
-            echo "Не все матчи закончились, но это последняя проверка — собираю с тем, что есть."
+            echo "Не все матчи закончились, но это последняя проверка — публикую то, что есть."
             echo "build=true" >> "$GITHUB_OUTPUT"
             echo "flags=--partial" >> "$GITHUB_OUTPUT"
           else
@@ -103,47 +104,34 @@ jobs:
           npm ci
           npm ci --prefix video
 
-      - name: Скачать фоновый трек
-        if: steps.go.outputs.build == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release download assets -p track.mp3 -D video/public/music --clobber
-
-      - name: Собрать ролик и отправить в Telegram
+      - name: Пост в канал
         if: steps.go.outputs.build == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          YANDEX_API_KEY: ${{ secrets.YANDEX_API_KEY }}
-          YANDEX_VOICE: ${{ secrets.YANDEX_VOICE }}
-          YANDEX_ROLE: ${{ secrets.YANDEX_ROLE }}
-          YANDEX_SPEED: ${{ secrets.YANDEX_SPEED }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: node scripts/make-review.mjs "${{ steps.day.outputs.day }}" ${{ steps.go.outputs.flags }}
+        run: node scripts/make-evening.mjs "${{ steps.day.outputs.day }}" ${{ steps.go.outputs.flags }}
 
-      - name: Закоммитить метку «ролик готов»
+      - name: Закоммитить снимок таблицы и метку «пост опубликован»
         if: steps.go.outputs.build == 'true'
         env:
           DAY: ${{ steps.day.outputs.day }}
         run: |
-          if [ ! -f video/out/review.mp4 ]; then
-            echo "Видео не появилось, метку не ставлю."
-            exit 0
-          fi
-          mkdir -p data/reviews
-          cp video/public/review.json "data/reviews/$DAY.json"
+          mkdir -p data/posted
+          date -u +%FT%TZ > "data/posted/$DAY-evening"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/reviews
+          git add data/posted data/history
           git commit -m "Итоги дня за $DAY"
           git pull --rebase
           git push
 
-      - name: Сохранить ролик как файл запуска
+      - name: Сохранить картинки как файлы запуска
         if: steps.go.outputs.build == 'true' || failure()
         uses: actions/upload-artifact@v7
         with:
-          name: review
+          name: evening
           path: video/out/
           if-no-files-found: ignore
 
@@ -156,4 +144,4 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "text=⚠️ Ролик «Итоги дня» не собрался. Подробности: ${RUN_URL}" > /dev/null
+            --data-urlencode "text=⚠️ Вечерний пост «Итоги дня» не опубликован. Подробности: ${RUN_URL}" > /dev/null

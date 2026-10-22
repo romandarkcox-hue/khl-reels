@@ -4,12 +4,9 @@
 // Если в .env есть ANTHROPIC_API_KEY, текст пишет Claude по фактам,
 // иначе (или при ошибке API) собирается по шаблону.
 
-import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import "./env.mjs";
 
-const envPath = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
-if (existsSync(envPath)) process.loadEnvFile(envPath);
 
 const MONTHS = [
   "января", "февраля", "марта", "апреля", "мая", "июня",

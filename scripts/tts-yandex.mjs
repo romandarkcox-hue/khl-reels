@@ -4,12 +4,9 @@
 // YANDEX_MODEL (для голосов LiveTTS: vasily, sergey, denis — значение livetts).
 
 import { setDefaultResultOrder } from "node:dns";
-import { existsSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { writeFileSync } from "node:fs";
+import "./env.mjs";
 
-const envPath = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
-if (existsSync(envPath)) process.loadEnvFile(envPath);
 
 // Соединение с SpeechKit по IPv6 иногда обрывается («fetch failed»), поэтому сначала IPv4.
 setDefaultResultOrder("ipv4first");

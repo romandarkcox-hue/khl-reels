@@ -1,4 +1,6 @@
 import { CalculateMetadataFunction, Composition, Still, staticFile } from "remotion";
+import { Announce } from "./announce";
+import { AnnounceCard, AnnounceCardProps } from "./AnnounceCard";
 import { ReviewVideo, ReviewVideoProps } from "./review/ReviewVideo";
 import { FPS, HEIGHT as REEL_HEIGHT, WIDTH as REEL_WIDTH } from "./review/shared";
 import { Review } from "./review/types";
@@ -21,6 +23,16 @@ const loadStandings: CalculateMetadataFunction<StandingsCardProps> = async ({
   }
   const standings = (await res.json()) as Standings;
   return { props: { ...props, standings } };
+};
+
+// Утренний анонс (public/announce.json) и вечерние счета (public/results.json).
+const loadDayCard: CalculateMetadataFunction<AnnounceCardProps> = async ({ props }) => {
+  const res = await fetch(staticFile(`${props.kind}.json`));
+  if (!res.ok) {
+    throw new Error(`Нет public/${props.kind}.json. Сначала запустите node scripts/day-cards.mjs`);
+  }
+  const announce = (await res.json()) as Announce;
+  return { props: { ...props, announce } };
 };
 
 // Reels «Итоги игрового дня»: длительность = сумма длительностей сцен из public/review.json.
@@ -66,6 +78,19 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{ conferenceId: "east", standings: null }}
         calculateMetadata={loadStandings}
       />
+      {(["announce", "results"] as const).flatMap((kind) =>
+        [0, 1].map((page) => (
+          <Still
+            key={`${kind}-${page}`}
+            id={`${kind}-${page + 1}`}
+            component={AnnounceCard}
+            width={WIDTH}
+            height={HEIGHT}
+            defaultProps={{ kind, page, announce: null }}
+            calculateMetadata={loadDayCard}
+          />
+        )),
+      )}
     </>
   );
 };

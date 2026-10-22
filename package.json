@@ -3,7 +3,8 @@
   "private": true,
   "description": "Ежедневная карусель с таблицей КХЛ для Instagram",
   "scripts": {
-    "cards": "node scripts/make-cards.mjs",
+    "evening": "node scripts/make-evening.mjs",
+    "announce": "node scripts/make-announce.mjs",
     "standings": "node scripts/fetch-standings.mjs"
   },
   "dependencies": {

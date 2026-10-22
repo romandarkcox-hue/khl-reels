@@ -104,13 +104,16 @@ export async function downloadLogos(standings) {
   }
 }
 
-export function saveStandings(standings) {
+// day — под какой датой сохранить снимок (вечером это игровой день,
+// даже если таблицу забрали уже после полуночи). writeSnapshot: false — для пробных
+// запусков, чтобы не перезаписать настоящий снимок дня.
+export function saveStandings(standings, day = standings.fetchedAt.slice(0, 10), { writeSnapshot = true } = {}) {
   mkdirSync(PUBLIC_DIR, { recursive: true });
   writeFileSync(OUTPUT_PATH, JSON.stringify(standings, null, 2) + "\n");
 
+  if (!writeSnapshot) return OUTPUT_PATH;
   // Снимок дня нужен, чтобы завтра понять, кто поднялся и кто опустился.
   mkdirSync(HISTORY_DIR, { recursive: true });
-  const day = standings.fetchedAt.slice(0, 10);
   const snapshot = {
     fetchedAt: standings.fetchedAt,
     conferences: standings.conferences.map((c) => ({

@@ -1,33 +1,35 @@
-# Утренняя карусель: каждый день около 7:00 по Москве.
-# Таблица КХЛ → две картинки и подпись → альбом в Telegram на проверку.
-# Снимок таблицы дня коммитится в data/history/ (нужен завтрашнему посту).
+# Утренний анонс: в 7:00 по Москве картинка с матчами дня → Telegram-канал.
+# Нет матчей — ничего не публикуется. Анонс за день выходит один раз:
+# метка data/posted/ГГГГ-ММ-ДД-announce.
 # Запускают два будильника: расписание GitHub и cron-job.org (GitHub иногда
-# пропускает запуски). Карусель за день отправляется один раз: метка data/cards/ГГГГ-ММ-ДД.
+# пропускает запуски или опаздывает).
 
-name: Карусель 7:00
+name: Анонс 7:00
 
 on:
   schedule:
-    # 03:45 UTC = 6:45 МСК. Не ровно в начале часа: в это время GitHub
-    # перегружен и запуски опаздывают или пропадают.
-    - cron: "45 3 * * *"
+    # 04:00 UTC = 7:00 МСК.
+    - cron: "0 4 * * *"
   workflow_dispatch:
     inputs:
+      day:
+        description: "День ГГГГ-ММ-ДД (пусто = сегодня)"
+        required: false
       force:
-        description: "Отправить заново, даже если карусель сегодня уже была"
+        description: "Опубликовать заново, даже если анонс за этот день уже был"
         type: boolean
         default: false
 
 # Не даём ручному запуску и запуску по расписанию идти одновременно.
 concurrency:
-  group: morning-cards
+  group: morning-announce
   cancel-in-progress: false
 
 permissions:
-  contents: write # чтобы закоммитить снимок таблицы
+  contents: write # чтобы закоммитить метку «анонс опубликован»
 
 jobs:
-  cards:
+  announce:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -36,13 +38,15 @@ jobs:
         with:
           ref: main # свежий main, чтобы увидеть метку, поставленную соседним запуском
 
-      - name: Карусель сегодня уже отправлена?
+      - name: Анонс сегодня уже опубликован?
         id: done
+        env:
+          INPUT_DAY: ${{ inputs.day }}
         run: |
-          DAY="$(TZ=Europe/Moscow date +%F)"
+          DAY="${INPUT_DAY:-$(TZ=Europe/Moscow date +%F)}"
           echo "day=$DAY" >> "$GITHUB_OUTPUT"
-          if [ -f "data/cards/$DAY" ] && [ "${{ inputs.force }}" != "true" ]; then
-            echo "Метка data/cards/$DAY есть, ничего не делаю."
+          if [ -f "data/posted/$DAY-announce" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Метка data/posted/$DAY-announce есть, ничего не делаю."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -62,25 +66,25 @@ jobs:
           npm ci
           npm ci --prefix video
 
-      - name: Картинки, подпись и отправка в Telegram
+      - name: Анонс в канал
         if: steps.done.outputs.skip != 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: npm run cards
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+        run: node scripts/make-announce.mjs "${{ steps.done.outputs.day }}"
 
-      - name: Закоммитить снимок таблицы и метку «карусель отправлена»
+      - name: Закоммитить метку «анонс опубликован»
         if: steps.done.outputs.skip != 'true'
         env:
           DAY: ${{ steps.done.outputs.day }}
         run: |
-          mkdir -p data/cards
-          date -u +%FT%TZ > "data/cards/$DAY"
+          mkdir -p data/posted
+          date -u +%FT%TZ > "data/posted/$DAY-announce"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/history data/cards
-          git commit -m "Снимок таблицы за $DAY"
+          git add data/posted
+          git commit -m "Анонс за $DAY"
           git pull --rebase
           git push
 
@@ -88,7 +92,7 @@ jobs:
         if: steps.done.outputs.skip != 'true' || failure()
         uses: actions/upload-artifact@v7
         with:
-          name: cards
+          name: announce
           path: video/out/
           if-no-files-found: ignore
 
@@ -101,4 +105,4 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "text=⚠️ Утренняя карусель не собралась. Подробности: ${RUN_URL}" > /dev/null
+            --data-urlencode "text=⚠️ Утренний анонс не опубликован. Подробности: ${RUN_URL}" > /dev/null

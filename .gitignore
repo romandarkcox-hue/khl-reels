@@ -7,6 +7,8 @@ dist/
 video/public/standings.json
 video/public/logos/
 video/public/review.json
+video/public/announce.json
+video/public/results.json
 video/public/voice/
 video/public/music/
 whisper.cpp/
