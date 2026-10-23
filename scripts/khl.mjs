@@ -5,6 +5,9 @@ export const TOURNAMENT = 1436; // регулярный чемпионат 2026/
 export const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 
+const SESSION_ATTEMPTS = 4;
+const SESSION_RETRY_MS = 30_000;
+
 export function fail(message) {
   console.error(`Ошибка: ${message}`);
   process.exit(1);
@@ -39,21 +42,35 @@ export async function fetchWithCookies(url, cookies, init = {}) {
 
 // Открывает страницу сайта, чтобы получить cookie и код сессии (bitrix_sessid),
 // без которого REST-блоки не отвечают.
+// Сайт иногда на минуту-другую отдаёт страницу без кода сессии,
+// поэтому пробуем несколько раз с паузой.
 export async function openSession(path = "/standings/") {
-  const cookies = new Map();
-  let res;
-  try {
-    res = await fetchWithCookies(`${SITE}${path}`, cookies, {
-      headers: { "Accept-Language": "ru-RU,ru;q=0.9" },
-    });
-  } catch (err) {
-    fail(`не удалось открыть khl.ru: ${err.message}`);
+  let problem = "";
+  for (let attempt = 1; attempt <= SESSION_ATTEMPTS; attempt++) {
+    if (attempt > 1) {
+      console.warn(`khl.ru: ${problem}, повторяю через ${SESSION_RETRY_MS / 1000} с (попытка ${attempt} из ${SESSION_ATTEMPTS})`);
+      await new Promise((r) => setTimeout(r, SESSION_RETRY_MS));
+    }
+    const cookies = new Map();
+    let res;
+    try {
+      res = await fetchWithCookies(`${SITE}${path}`, cookies, {
+        headers: { "Accept-Language": "ru-RU,ru;q=0.9" },
+      });
+    } catch (err) {
+      problem = `не удалось открыть сайт (${err.message})`;
+      continue;
+    }
+    if (!res.ok) {
+      problem = `ответ ${res.status} на странице ${path}`;
+      continue;
+    }
+    const html = await res.text();
+    const sessid = html.match(/"bitrix_sessid":"([0-9a-f]+)"/)?.[1];
+    if (sessid) return { cookies, sessid, referer: `${SITE}${path}` };
+    problem = `нет bitrix_sessid на странице ${path}`;
   }
-  if (!res.ok) fail(`khl.ru ответил ${res.status} на странице ${path}`);
-  const html = await res.text();
-  const sessid = html.match(/"bitrix_sessid":"([0-9a-f]+)"/)?.[1];
-  if (!sessid) fail(`не нашёл bitrix_sessid на странице ${path}`);
-  return { cookies, sessid, referer: `${SITE}${path}` };
+  fail(`${problem} (после ${SESSION_ATTEMPTS} попыток)`);
 }
 
 // Запрос к REST-блоку сайта, например "standings/regular" или "game/protocol".
