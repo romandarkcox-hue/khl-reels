@@ -1,6 +1,6 @@
 # KHL Reels
 
-Проект публикует в **Telegram-канал [@KHLtable](https://t.me/KHLtable)** («Турнирная таблица КХЛ | 2026/27») посты про КХЛ (Континентальная хоккейная лига). Формат утверждён пользователем 2026-10-22 (до этого была пауза с 21.10, а ещё раньше Instagram и Reels):
+Проект публикует в **Telegram-канал [@KHLtablitca](https://t.me/KHLtablitca)** («Турнирная таблица КХЛ | сезон 2026/27»; с 2026-10-23, до этого был @KHLtable, его оставили как есть) посты про КХЛ (Континентальная хоккейная лига). Формат утверждён пользователем 2026-10-22 (до этого была пауза с 21.10, а ещё раньше Instagram и Reels):
 
 - **Утро, 7:00 МСК: анонс.** Картинка «Матчи дня»: время начала (МСК), команды с логотипами, место каждой в таблице конференции. Больше 6 матчей → две картинки. Нет матчей → ничего не публикуем. Подпись: список матчей + хэштеги.
 - **Вечер, после последнего матча: два отдельных поста** (пользователь 22.10: не смешивать в одном альбоме):
@@ -15,7 +15,7 @@
 - `scripts/make-evening.mjs [ДЕНЬ] [--partial] [--to-me | --no-send]` — два вечерних поста. Без `--partial` выходит без публикации, если не все матчи закончились или протоколы не заполнены; после публикации в канал создаёт `video/out/evening-posted`, по нему воркфлоу ставит метку дня. Снимок таблицы `data/history/ДЕНЬ.json` пишется **только при публикации в канал** (пробные запуски его не трогают), под датой игрового дня.
 - `scripts/day-cards.mjs` — общий код: матчи дня из календаря (+ голы из протокола при `withGoals`) и рендер картинок `announce-N` / `results-N`. Проверка: `node scripts/day-cards.mjs announce|results [ДЕНЬ]`.
 - `scripts/post-text.mjs` — подпись вечернего поста (шаблон; с `ANTHROPIC_API_KEY` пишет Claude). Подпись ≤ 1024 знаков (лимит Telegram), при превышении описания матчей сокращаются; `sendPost` в `send-telegram.mjs` всё равно отправит длинный текст отдельным сообщением.
-- `scripts/send-telegram.mjs` — `sendPost(файлы, текст, чат)`: одна картинка или альбом с подписью. Канал — `TELEGRAM_CHANNEL_ID=@KHLtable`, личка — `TELEGRAM_CHAT_ID`.
+- `scripts/send-telegram.mjs` — `sendPost(файлы, текст, чат)`: одна картинка или альбом с подписью. Канал — `TELEGRAM_CHANNEL_ID=@KHLtablitca`, личка — `TELEGRAM_CHAT_ID`.
 - `scripts/env.mjs` — грузит `.env` **поверх** переменных Windows: у пользователя в Windows задана своя `TELEGRAM_BOT_TOKEN` от другого бота (@alinasokol_bot), из-за неё раньше локальные запуски слали не от того бота. Все скрипты импортируют `./env.mjs`.
 - Картинки: `video/src/AnnounceCard.tsx` (анонс и счета, тёмно-синий «вечерний лёд», при 1–2 матчах крупные строки), `video/src/StandingsCard.tsx` (таблицы), палитры таблиц `video/src/themes.ts`, цвета клубов `video/src/clubColors.ts`. Шрифт Manrope. Композиции: `announce-1/2`, `results-1/2`, `west`, `east`.
 - `scripts/khl.mjs`: `gameStatus` считает матч завершённым и по `g.online.status = "Завершен"` (сразу после сирены, пока протокол не утверждён, счёт лежит в `g.online`), `gameScore(g)` берёт счёт оттуда же.
@@ -24,7 +24,7 @@
 ## Расписание (GitHub Actions + cron-job.org)
 - `.github/workflows/morning-cards.yml` («Анонс 7:00»): cron `0 4 * * *` = 7:00 МСК → `make-announce.mjs` → метка `data/posted/ДЕНЬ-announce`.
 - `.github/workflows/evening-review.yml` («Итоги дня»): каждые 20 мин с 20:30 до 01:10 МСК; игровой день = МСК минус 5 ч; метка `data/posted/ДЕНЬ-evening` → выход; все матчи закончились → `make-evening.mjs`, коммит метки и `data/history/`; после 01:00 МСК публикует с `--partial`. Ручной запуск с полями day / partial / force.
-- **Автоматика включена 2026-10-22** (воркфлоу `gh workflow enable`, задания cron-job.org `enabled: true`, секрет `TELEGRAM_CHANNEL_ID`). Выключить: `gh workflow disable morning-cards.yml` и `evening-review.yml` + задания на cron-job.org. Имена файлов воркфлоу прежние (раньше там были карусель и Reels).
+- **Автоматика включена 2026-10-22** (воркфлоу `gh workflow enable`, задания cron-job.org `enabled: true`, секрет `TELEGRAM_CHANNEL_ID`). Сменить канал: бот администратором нового канала, новое значение в `.env` и `gh secret set TELEGRAM_CHANNEL_ID`.. Выключить: `gh workflow disable morning-cards.yml` и `evening-review.yml` + задания на cron-job.org. Имена файлов воркфлоу прежние (раньше там были карусель и Reels).
 - **cron-job.org** дублирует запуски через `workflow_dispatch` (расписание GitHub пропускает и опаздывает): «KHL: Анонс 7:00» (раньше «KHL: Карусель 6:45», скрипт находит его по старому имени) и «KHL: Итоги дня» (20–01 ч МСК, минуты 10/30/50). `node scripts/setup-cronjobs.mjs` создаёт/обновляет (ставит `enabled: true`), `--list` показывает статус. Ключи в `.env`: `CRONJOB_API_KEY`, `GH_DISPATCH_TOKEN` (fine-grained, только khl-reels, Actions: Read and write). **Токен истекает 2027-01-16**: заранее напомнить, продлить (Regenerate), заменить в `.env`, перезапустить `setup-cronjobs.mjs`.
 - В GitHub Secrets нужны `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_CHANNEL_ID` (+ `ANTHROPIC_API_KEY`, если появится). Новый ключ в `.env` → загрузить: `gh secret set ИМЯ`.
 - Перед ручной работой с `data/` делать `git pull`: бот коммитит в main утром и вечером.
