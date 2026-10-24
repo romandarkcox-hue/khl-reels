@@ -1,0 +1,191 @@
+{
+  "fetchedAt": "2026-10-24T20:10:48+03:00",
+  "conferences": [
+    {
+      "id": "west",
+      "teams": [
+        {
+          "rank": 1,
+          "name": "Локомотив",
+          "clubId": 1,
+          "gp": 18,
+          "pts": 26,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 2,
+          "name": "ЦСКА",
+          "clubId": 2,
+          "gp": 18,
+          "pts": 26,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 3,
+          "name": "Спартак",
+          "clubId": 7,
+          "gp": 18,
+          "pts": 24,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 4,
+          "name": "Северсталь",
+          "clubId": 56,
+          "gp": 19,
+          "pts": 24,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 5,
+          "name": "Драконы",
+          "clubId": 568,
+          "gp": 17,
+          "pts": 24,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 6,
+          "name": "Торпедо",
+          "clubId": 26,
+          "gp": 18,
+          "pts": 24,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 7,
+          "name": "Динамо Мн",
+          "clubId": 207,
+          "gp": 19,
+          "pts": 20,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 8,
+          "name": "СКА",
+          "clubId": 24,
+          "gp": 17,
+          "pts": 19,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 9,
+          "name": "Динамо М",
+          "clubId": 719,
+          "gp": 21,
+          "pts": 18,
+          "inPlayoffZone": false
+        },
+        {
+          "rank": 10,
+          "name": "Лада",
+          "clubId": 66,
+          "gp": 18,
+          "pts": 9,
+          "inPlayoffZone": false
+        },
+        {
+          "rank": 11,
+          "name": "ХК Сочи",
+          "clubId": 451,
+          "gp": 17,
+          "pts": 8,
+          "inPlayoffZone": false
+        }
+      ]
+    },
+    {
+      "id": "east",
+      "teams": [
+        {
+          "rank": 1,
+          "name": "Металлург Мг",
+          "clubId": 37,
+          "gp": 20,
+          "pts": 32,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 2,
+          "name": "Нефтехимик",
+          "clubId": 71,
+          "gp": 19,
+          "pts": 24,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 3,
+          "name": "Барыс",
+          "clubId": 198,
+          "gp": 18,
+          "pts": 21,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 4,
+          "name": "Салават Юлаев",
+          "clubId": 38,
+          "gp": 19,
+          "pts": 21,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 5,
+          "name": "Ак Барс",
+          "clubId": 53,
+          "gp": 19,
+          "pts": 20,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 6,
+          "name": "Амур",
+          "clubId": 54,
+          "gp": 17,
+          "pts": 19,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 7,
+          "name": "Автомобилист",
+          "clubId": 190,
+          "gp": 18,
+          "pts": 18,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 8,
+          "name": "Сибирь",
+          "clubId": 29,
+          "gp": 20,
+          "pts": 17,
+          "inPlayoffZone": true
+        },
+        {
+          "rank": 9,
+          "name": "Адмирал",
+          "clubId": 418,
+          "gp": 17,
+          "pts": 17,
+          "inPlayoffZone": false
+        },
+        {
+          "rank": 10,
+          "name": "Трактор",
+          "clubId": 25,
+          "gp": 17,
+          "pts": 16,
+          "inPlayoffZone": false
+        },
+        {
+          "rank": 11,
+          "name": "Авангард",
+          "clubId": 34,
+          "gp": 16,
+          "pts": 16,
+          "inPlayoffZone": false
+        }
+      ]
+    }
+  ]
+}
