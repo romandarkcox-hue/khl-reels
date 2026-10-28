@@ -90,16 +90,20 @@ async function wallPost(id, message, attachments = []) {
 // Пост с гифками от имени группы. В одну запись ВК берёт только одну гифку
 // (две → «Exceeded max amount of doc attachments», 2026-10-28), поэтому каждая
 // гифка идёт своей записью. Публикуем с конца: наверху стены окажется запись
-// с текстом и первой картинкой, под ней остальные по порядку.
+// с текстом и первой картинкой, под ней остальные по порядку. Запись с одной
+// гифкой без текста ВК не принимает, поэтому у остальных подпись — первая
+// строка текста с номером: «… (2/2)».
 // Возвращает ссылки на записи (первая — с текстом).
 export async function sendVkPost(photoPaths, text) {
   const id = await groupId();
   const attachments = [];
   for (const path of photoPaths) attachments.push(await uploadGif(id, path));
   if (attachments.length === 0) return [await wallPost(id, text)];
+  const title = text.trim().split("\n")[0];
   const links = [];
   for (let i = attachments.length - 1; i >= 0; i--) {
-    links.unshift(await wallPost(id, i === 0 ? text : "", [attachments[i]]));
+    const message = i === 0 ? text : `${title} (${i + 1}/${attachments.length})`;
+    links.unshift(await wallPost(id, message, [attachments[i]]));
   }
   return links;
 }
