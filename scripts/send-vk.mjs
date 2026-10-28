@@ -87,12 +87,21 @@ async function wallPost(id, message, attachments = []) {
   return `https://vk.ru/wall-${id}_${post_id}`;
 }
 
-// Пост с гифками от имени группы. Возвращает ссылку на него.
+// Пост с гифками от имени группы. В одну запись ВК берёт только одну гифку
+// (две → «Exceeded max amount of doc attachments», 2026-10-28), поэтому каждая
+// гифка идёт своей записью. Публикуем с конца: наверху стены окажется запись
+// с текстом и первой картинкой, под ней остальные по порядку.
+// Возвращает ссылки на записи (первая — с текстом).
 export async function sendVkPost(photoPaths, text) {
   const id = await groupId();
   const attachments = [];
   for (const path of photoPaths) attachments.push(await uploadGif(id, path));
-  return wallPost(id, text, attachments);
+  if (attachments.length === 0) return [await wallPost(id, text)];
+  const links = [];
+  for (let i = attachments.length - 1; i >= 0; i--) {
+    links.unshift(await wallPost(id, i === 0 ? text : "", [attachments[i]]));
+  }
+  return links;
 }
 
 // Для утреннего и вечернего скриптов: ВК публикуется после Telegram, и его сбой
@@ -104,7 +113,7 @@ export async function sendVkPostSafe(photoPaths, text, link) {
     return;
   }
   try {
-    console.log(`   ВК: ${await sendVkPost(photoPaths, text)}`);
+    console.log(`   ВК: ${(await sendVkPost(photoPaths, text)).join(", ")}`);
     return;
   } catch (err) {
     console.error(`   ВК с гифками не вышло: ${err.message}`);
@@ -126,7 +135,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const photos = args.filter((a, i) => !a.startsWith("--") && !args[i - 1]?.startsWith("--"));
   const text = textFile ? readFileSync(textFile, "utf8").trim() : "";
   try {
-    console.log("Пост в ВК:", await sendVkPost(photos, text));
+    console.log("Пост в ВК:", (await sendVkPost(photos, text)).join(", "));
   } catch (err) {
     console.error(`Ошибка: ${err.message}`);
     process.exit(1);
