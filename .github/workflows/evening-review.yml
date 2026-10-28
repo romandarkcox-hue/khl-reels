@@ -1,4 +1,4 @@
-# Вечерний пост «Итоги дня»: счета матчей и таблицы «Запад» и «Восток» → Telegram-канал.
+# Вечерний пост «Итоги дня»: счета матчей и таблицы «Запад» и «Восток» → Telegram-канал и группа ВК.
 # Каждые 20 минут с 20:30 до 01:10 МСК быстро проверяет календарь khl.ru.
 # Когда все матчи дня закончились, публикует пост и коммитит снимок таблицы
 # data/history/ГГГГ-ММ-ДД.json. Пост за день выходит один раз:
@@ -104,12 +104,13 @@ jobs:
           npm ci
           npm ci --prefix video
 
-      - name: Пост в канал
+      - name: Посты в канал и ВК
         if: steps.go.outputs.build == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/make-evening.mjs "${{ steps.day.outputs.day }}" ${{ steps.go.outputs.flags }}
 

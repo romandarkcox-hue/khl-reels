@@ -1,6 +1,7 @@
 import { CalculateMetadataFunction, Composition, Still, staticFile } from "remotion";
 import { Announce } from "./announce";
 import { AnnounceCard, AnnounceCardProps } from "./AnnounceCard";
+import { BrandAvatar, BrandCover } from "./BrandCards";
 import { ReviewVideo, ReviewVideoProps } from "./review/ReviewVideo";
 import { FPS, HEIGHT as REEL_HEIGHT, WIDTH as REEL_WIDTH } from "./review/shared";
 import { Review } from "./review/types";
@@ -91,6 +92,18 @@ export const RemotionRoot: React.FC = () => {
           />
         )),
       )}
+      {/* Оформление группы ВК: аватарка (два варианта) и обложка */}
+      {(["a", "b"] as const).map((variant) => (
+        <Still
+          key={`vk-avatar-${variant}`}
+          id={`vk-avatar-${variant}`}
+          component={BrandAvatar}
+          width={1000}
+          height={1000}
+          defaultProps={{ variant }}
+        />
+      ))}
+      <Still id="vk-cover" component={BrandCover} width={1920} height={768} />
     </>
   );
 };

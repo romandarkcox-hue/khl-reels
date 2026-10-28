@@ -1,4 +1,4 @@
-# Утренний анонс: в 7:00 по Москве картинка с матчами дня → Telegram-канал.
+# Утренний анонс: в 7:00 по Москве картинка с матчами дня → Telegram-канал и группа ВК.
 # Нет матчей — ничего не публикуется. Анонс за день выходит один раз:
 # метка data/posted/ГГГГ-ММ-ДД-announce.
 # Запускают два будильника: расписание GitHub и cron-job.org (GitHub иногда
@@ -66,12 +66,13 @@ jobs:
           npm ci
           npm ci --prefix video
 
-      - name: Анонс в канал
+      - name: Анонс в канал и ВК
         if: steps.done.outputs.skip != 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          VK_GROUP_TOKEN: ${{ secrets.VK_GROUP_TOKEN }}
         run: node scripts/make-announce.mjs "${{ steps.done.outputs.day }}"
 
       - name: Закоммитить метку «анонс опубликован»

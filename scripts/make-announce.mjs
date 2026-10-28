@@ -1,4 +1,5 @@
 // Утренний анонс: матчи игрового дня с временем начала и местом команд в таблице.
+// Публикуется в Telegram-канал и в группу ВК.
 // Картинка 4:5 (до 6 матчей) или две, если матчей больше. Нет матчей — ничего не делаем.
 //
 // Запуск:  node scripts/make-announce.mjs [ГГГГ-ММ-ДД] [--to-me | --no-send]
@@ -10,6 +11,7 @@ import { join } from "node:path";
 import { OUT_DIR, fetchDayMatches, renderDayCards } from "./day-cards.mjs";
 import { fail, moscowNow } from "./khl.mjs";
 import { channelId, sendPost } from "./send-telegram.mjs";
+import { sendVkPostSafe } from "./send-vk.mjs";
 
 const MONTHS = [
   "января", "февраля", "марта", "апреля", "мая", "июня",
@@ -65,6 +67,7 @@ if (noSend) {
 } else {
   console.log(`4/4 Публикую ${toMe ? "вам в личку" : `в канал ${channelId}`}...`);
   await sendPost(files, text, toMe ? undefined : channelId);
+  if (!toMe) await sendVkPostSafe(files, text);
 }
 
 console.log("Готово:", [...files, join(OUT_DIR, "announce.txt")].join(", "));

@@ -1,4 +1,4 @@
-// Вечер после последнего матча дня → Telegram-канал, два поста:
+// Вечер после последнего матча дня → Telegram-канал и группа ВК, два поста:
 // 1) картинка со счетами и текст с описанием матчей; 2) таблицы «Запад» и «Восток».
 // Снимок таблицы дня пишется в data/history/.
 //
@@ -16,6 +16,7 @@ import { HISTORY_DIR, saveStandings } from "./fetch-standings.mjs";
 import { fail, moscowNow } from "./khl.mjs";
 import { buildFacts, loadPreviousSnapshot, tablesText, writePostText } from "./post-text.mjs";
 import { channelId, sendPost } from "./send-telegram.mjs";
+import { sendVkPostSafe } from "./send-vk.mjs";
 
 const VIDEO_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "video");
 // Появляется только после публикации в канал: по нему воркфлоу понимает, ставить ли метку дня.
@@ -80,7 +81,11 @@ if (noSend) {
   const chat = toMe ? undefined : channelId;
   await sendPost(resultFiles, text, chat);
   await sendPost(tableFiles, tables, chat);
-  if (!toMe) writeFileSync(POSTED_FLAG, new Date().toISOString() + "\n");
+  if (!toMe) {
+    writeFileSync(POSTED_FLAG, new Date().toISOString() + "\n");
+    await sendVkPostSafe(resultFiles, text);
+    await sendVkPostSafe(tableFiles, tables);
+  }
 }
 
 console.log(
