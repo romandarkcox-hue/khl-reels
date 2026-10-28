@@ -28,10 +28,33 @@ function teamLabel(t) {
   return t.rank ? `${t.name} (${t.rank}-е, ${CONF_SHORT[t.conf]})` : t.name;
 }
 
+function matchesWord(n) {
+  const [d, dd] = [n % 10, n % 100];
+  if (d === 1 && dd !== 11) return "матч";
+  if (d >= 2 && d <= 4 && (dd < 12 || dd > 14)) return "матча";
+  return "матчей";
+}
+
+// Заголовок — первая строка, её видно в списке чатов Telegram. Главный матч —
+// пара команд, которые в сумме выше всех в таблице.
+function headline(day, matches) {
+  const date = ` · ${formatDay(day)}`;
+  const pair = (m) => `${m.home.name}${m.home.rank ? ` (${m.home.rank}-е)` : ""} — ${m.away.name}${m.away.rank ? ` (${m.away.rank}-е)` : ""}`;
+  if (matches.length === 1) {
+    return `🏒 Сегодня в КХЛ один матч: ${pair(matches[0])}, начало в ${matches[0].time}${date}`;
+  }
+  const count = `${matches.length} ${matchesWord(matches.length)}`;
+  const ranked = matches.filter((m) => m.home.rank && m.away.rank);
+  if (!ranked.length) return `🏒 Сегодня в КХЛ ${count}${date}`;
+  const main = ranked.reduce((best, m) =>
+    m.home.rank + m.away.rank < best.home.rank + best.away.rank ? m : best);
+  return `🏒 Сегодня в КХЛ ${count}, главный: ${pair(main)}${date}`;
+}
+
 function postText(day, matches) {
   const lines = matches.map((m) => `${m.time}  ${teamLabel(m.home)} — ${teamLabel(m.away)}`);
   return [
-    `Матчи дня, ${formatDay(day)} 🏒`,
+    headline(day, matches),
     "",
     ...lines,
     "",

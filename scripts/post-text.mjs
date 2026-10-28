@@ -1,5 +1,5 @@
-// Текст вечернего поста (счета дня + таблицы конференций): итоги матчей,
-// кто поднялся и опустился, лидеры и борьба за плей-офф.
+// Текст вечернего поста (счета дня + таблицы конференций): заголовок с двумя
+// самыми яркими матчами, затем счёт и короткая фраза по каждому матчу.
 //
 // Если в .env есть ANTHROPIC_API_KEY, текст пишет Claude по собранным фактам.
 // Без ключа (или при любой ошибке API) собирается текст по шаблону.
@@ -110,6 +110,26 @@ export function tablesText(day) {
   ].join("\n");
 }
 
+// Насколько победитель уступал по ходу матча: { behind, score } (счёт «хозяева:гости»).
+function comeback(g) {
+  let worst = { behind: 0, score: null };
+  for (const x of g.goals.filter((x) => !x.shootout)) {
+    const [h, a] = x.score.split(":").map(Number);
+    const behind = g.winner === "home" ? a - h : h - a;
+    if (behind > worst.behind) worst = { behind, score: x.score };
+  }
+  return worst;
+}
+
+// Лучший бомбардир матча: [фамилия, голов] или [].
+function topScorer(g) {
+  const bySurname = new Map();
+  for (const x of g.goals) {
+    if (!x.shootout && x.scorer) bySurname.set(x.scorer, (bySurname.get(x.scorer) ?? 0) + 1);
+  }
+  return [...bySurname].sort((a, b) => b[1] - a[1])[0] ?? [];
+}
+
 // Только результаты: кто с кем сыграл и кто победил.
 // Самое интересное о матче по протоколу, по убыванию важности:
 // буллит или овертайм, камбэк, хет-трик или дубль, сухая победа или разгром,
@@ -127,19 +147,10 @@ function matchHighlights(g) {
   if (so?.scorer) out.push(`победный буллит — ${so.scorer}`);
   else if (ot?.scorer) out.push(`в овертайме забил ${ot.scorer}`);
 
-  // Камбэк: насколько победитель уступал по ходу матча.
-  let worst = 0;
-  let worstScore = null;
-  for (const x of goals) {
-    const [h, a] = x.score.split(":").map(Number);
-    const behind = g.winner === "home" ? a - h : h - a;
-    if (behind > worst) [worst, worstScore] = [behind, x.score];
-  }
-  if (worst >= 2) out.push(`камбэк с ${worstScore}`);
+  const back = comeback(g);
+  if (back.behind >= 2) out.push(`камбэк с ${back.score}`);
 
-  const bySurname = new Map();
-  for (const x of goals) if (x.scorer) bySurname.set(x.scorer, (bySurname.get(x.scorer) ?? 0) + 1);
-  const [star, starGoals] = [...bySurname].sort((a, b) => b[1] - a[1])[0] ?? [];
+  const [star, starGoals] = topScorer(g);
   if (starGoals >= 3) out.push(`хет-трик ${star}`);
   else if (starGoals === 2) out.push(`дубль ${star}`);
 
@@ -156,8 +167,57 @@ function matchHighlights(g) {
   return out;
 }
 
+// Заголовок поста — первая строка, её видно в списке чатов Telegram.
+// Род команды (для глагола) и винительный падеж там, где он не совпадает с названием.
+const GENDER = {
+  "Динамо М": "n", "Динамо Мн": "n", "Торпедо": "n",
+  "Лада": "f", "Северсталь": "f", "Сибирь": "f",
+  "Драконы": "pl",
+};
+const ACCUSATIVE = { "Лада": "Ладу", "Салават Юлаев": "Салавата Юлаева", "Драконы": "Драконов" };
+const VERB_ENDING = { m: "", f: "а", n: "о", pl: "и" };
+
+// Самое яркое в матче одной фразой и его вес: разгром > камбэк > хет-трик >
+// сухая победа > овертайм или буллиты > обычная победа.
+function headlineEvent(g) {
+  const [home, away] = g.score.split(":").map(Number);
+  const [winner, loser] = g.winner === "home" ? [g.home, g.away] : [g.away, g.home];
+  const [winGoals, loseGoals] = [Math.max(home, away), Math.min(home, away)];
+  const margin = winGoals - loseGoals;
+  const verb = (stem) => stem + VERB_ENDING[GENDER[winner] ?? "m"];
+  const beat = (stem, tail = "", how = "") =>
+    `${winner} ${how}${verb(stem)} ${ACCUSATIVE[loser] ?? loser} ${winGoals}:${loseGoals}${tail}`;
+
+  if (margin >= 4) return { weight: 50 + margin, text: beat("разгромил") };
+  const back = comeback(g);
+  if (back.behind >= 2) {
+    const [h, a] = back.score.split(":");
+    const from = g.winner === "home" ? `${h}:${a}` : `${a}:${h}`;
+    return { weight: 40 + back.behind, text: beat("обыграл", `, отыгравшись с ${from}`) };
+  }
+  const [star, starGoals] = topScorer(g);
+  if (starGoals >= 3) return { weight: 30, text: beat("обыграл", `, хет-трик ${star}`) };
+  if (loseGoals === 0) return { weight: 20 + margin, text: beat("обыграл", "", "всухую ") };
+  if (g.ots === "SO") return { weight: 10, text: beat("обыграл", " по буллитам") };
+  if (g.ots === "OT") return { weight: 10, text: beat("обыграл", " в овертайме") };
+  return { weight: margin, text: beat("обыграл") };
+}
+
+// Чтобы глагол не повторялся во втором матче заголовка.
+const SYNONYMS = [["разгромил", "крупно обыграл"], ["обыграл", "победил"]];
+
+// Два самых ярких матча (если не влезают — один) и дата.
+export function headline(facts) {
+  const [first, second] = facts.games.map(headlineEvent).sort((a, b) => b.weight - a.weight).map((e) => e.text);
+  const tail = ` · итоги ${formatDay(facts.day)}`;
+  if (!second) return `🏒 ${first}${tail}`;
+  const [word, alt] = SYNONYMS.find(([w]) => first.includes(w) && second.includes(w)) ?? [];
+  const two = `🏒 ${first}; ${word ? second.replace(word, alt) : second}${tail}`;
+  return two.length <= 120 ? two : `🏒 ${first}${tail}`;
+}
+
 function templateLines(facts, perMatch) {
-  const lines = [`🏒 Итоги дня КХЛ, ${formatDay(facts.day)}`, ""];
+  const lines = [headline(facts), ""];
   for (const g of facts.games) {
     const winner = g.winner === "home" ? g.home : g.away;
     const story = matchHighlights(g).slice(0, perMatch).join(", ");
