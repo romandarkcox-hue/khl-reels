@@ -67,7 +67,7 @@ if (noSend) {
 } else {
   console.log(`4/4 Публикую ${toMe ? "вам в личку" : `в канал ${channelId}`}...`);
   const link = await sendPost(files, text, toMe ? undefined : channelId);
-  if (!toMe) await sendVkPostSafe(text, link);
+  if (!toMe) await sendVkPostSafe(files, text, link);
 }
 
 console.log("Готово:", [...files, join(OUT_DIR, "announce.txt")].join(", "));

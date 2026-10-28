@@ -83,8 +83,8 @@ if (noSend) {
   const tablesLink = await sendPost(tableFiles, tables, chat);
   if (!toMe) {
     writeFileSync(POSTED_FLAG, new Date().toISOString() + "\n");
-    await sendVkPostSafe(text, resultsLink);
-    await sendVkPostSafe(tables, tablesLink);
+    await sendVkPostSafe(resultFiles, text, resultsLink);
+    await sendVkPostSafe(tableFiles, tables, tablesLink);
   }
 }
 
