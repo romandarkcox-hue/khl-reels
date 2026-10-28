@@ -1,21 +1,22 @@
-// Публикация поста на стене группы ВКонтакте: картинки + текст.
+// Публикация поста на стене группы ВКонтакте: текст + ссылка на тот же пост в Telegram.
 //
-// Запуск: node scripts/send-vk.mjs a.jpg b.jpg --text-file video/out/announce.txt
+// Запуск: node scripts/send-vk.mjs https://t.me/KHLtablitca/43 --text-file video/out/announce.txt
 //
 // Берёт VK_GROUP_TOKEN (ключ сообщества) из .env или окружения.
-// Обычная загрузка фото на стену (photos.getWallUploadServer) с ключом сообщества
-// не работает (ошибка 27), поэтому грузим картинки как «фото для сообщений»:
-// они принадлежат группе и прикрепляются к посту.
+// Картинки с ключом сообщества в пост не попадают (проверено 2026-10-28):
+// photos.getWallUploadServer и загрузка в альбом дают ошибку 27, а «фото для
+// сообщений» и картинку-файл (docs.getWallUploadServer) wall.post молча
+// выбрасывает; ссылку-вложение отклоняет (link_photo_sizing_rule). Ключ
+// пользователя с правом photos VK ID выдаёт только бизнесу по заявке.
+// Поэтому в ВК только текст, а ссылка на пост в Telegram с картинками — в нём.
 
-import { openAsBlob, readFileSync } from "node:fs";
-import { basename, extname } from "node:path";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import "./env.mjs";
 import { sendMessage } from "./send-telegram.mjs";
 
 const API = "https://api.vk.ru/method";
 const VERSION = "5.199";
-const TYPES = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png" };
 
 const token = process.env.VK_GROUP_TOKEN;
 
@@ -31,44 +32,38 @@ async function callVk(method, params = {}) {
   return data.response;
 }
 
-async function uploadPhoto(path) {
-  const server = await callVk("photos.getMessagesUploadServer", { peer_id: 0 });
-  const form = new FormData();
-  // Без типа файла сервер ВК молча не принимает картинку (photo приходит пустым).
-  const type = TYPES[extname(path).toLowerCase()] ?? "image/jpeg";
-  form.append("photo", await openAsBlob(path, { type }), basename(path));
-  const res = await fetch(server.upload_url, { method: "POST", body: form });
-  const uploaded = await res.json();
-  if (!uploaded.photo || uploaded.photo === "[]") {
-    throw new Error(`ВК не принял картинку ${basename(path)}`);
+// Ссылка на Telegram встаёт перед строкой хэштегов (если она есть в конце).
+export function withLink(text, link) {
+  if (!link) return text;
+  const line = `🖼 Картинки — в Telegram: ${link}`;
+  const lines = text.trimEnd().split("\n");
+  if (lines.at(-1).startsWith("#")) {
+    lines.splice(-1, 0, line, "");
+    return lines.join("\n");
   }
-  const [photo] = await callVk("photos.saveMessagesPhoto", uploaded);
-  return `photo${photo.owner_id}_${photo.id}_${photo.access_key}`;
+  return `${text.trimEnd()}\n\n${line}`;
 }
 
 // Пост от имени группы. Возвращает ссылку на него.
-export async function sendVkPost(photoPaths, text) {
+export async function sendVkPost(text, link) {
   const [group] = (await callVk("groups.getById")).groups;
-  const attachments = [];
-  for (const path of photoPaths) attachments.push(await uploadPhoto(path));
   const { post_id } = await callVk("wall.post", {
     owner_id: -group.id,
     from_group: 1,
-    message: text,
-    attachments: attachments.join(","),
+    message: withLink(text, link),
   });
   return `https://vk.ru/wall-${group.id}_${post_id}`;
 }
 
 // Для утреннего и вечернего скриптов: ВК публикуется после Telegram, и его сбой
 // не должен ронять запуск. Об ошибке пишем вам в личку Telegram.
-export async function sendVkPostSafe(photoPaths, text) {
+export async function sendVkPostSafe(text, link) {
   if (!token) {
     console.log("   ВК пропускаю: не задан VK_GROUP_TOKEN.");
     return;
   }
   try {
-    console.log(`   ВК: ${await sendVkPost(photoPaths, text)}`);
+    console.log(`   ВК: ${await sendVkPost(text, link)}`);
   } catch (err) {
     console.error(`   ВК не опубликован: ${err.message}`);
     await sendMessage(`⚠️ Пост в ВК не опубликован (в Telegram вышел): ${err.message}`);
@@ -79,10 +74,10 @@ export async function sendVkPostSafe(photoPaths, text) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const textAt = args.indexOf("--text-file");
-  const photos = args.slice(0, textAt === -1 ? undefined : textAt);
+  const link = args.find((a, i) => !a.startsWith("--") && i !== textAt + 1) ?? "";
   const text = textAt === -1 ? "" : readFileSync(args[textAt + 1], "utf8").trim();
   try {
-    console.log("Пост в ВК:", await sendVkPost(photos, text));
+    console.log("Пост в ВК:", await sendVkPost(text, link));
   } catch (err) {
     console.error(`Ошибка: ${err.message}`);
     process.exit(1);

@@ -96,12 +96,16 @@ export async function sendPhotos(photoPaths, caption = "", chat = chatId) {
 
 // Пост: одна картинка или альбом, текст подписью под ними. Если текст длиннее
 // лимита подписи, он уходит отдельным сообщением сразу после картинок.
+// Возвращает ссылку на пост, если чат публичный (@имя), иначе пустую строку.
 export async function sendPost(photoPaths, text, chat = chatId) {
   if (!chat) fail("не задан чат для поста (TELEGRAM_CHANNEL_ID в .env?)");
   const caption = text.length <= MAX_CAPTION ? text : "";
-  if (photoPaths.length === 1) await sendPhoto(photoPaths[0], caption, chat);
-  else await sendPhotos(photoPaths, caption, chat);
+  const sent =
+    photoPaths.length === 1
+      ? await sendPhoto(photoPaths[0], caption, chat)
+      : (await sendPhotos(photoPaths, caption, chat))[0];
   if (!caption) await sendMessage(text, chat);
+  return String(chat).startsWith("@") ? `https://t.me/${chat.slice(1)}/${sent.message_id}` : "";
 }
 
 // Запуск из командной строки

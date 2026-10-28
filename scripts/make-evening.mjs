@@ -79,12 +79,12 @@ if (noSend) {
 } else {
   console.log(`4/4 Публикую ${toMe ? "вам в личку" : `в канал ${channelId}`}: итоги, затем таблицы...`);
   const chat = toMe ? undefined : channelId;
-  await sendPost(resultFiles, text, chat);
-  await sendPost(tableFiles, tables, chat);
+  const resultsLink = await sendPost(resultFiles, text, chat);
+  const tablesLink = await sendPost(tableFiles, tables, chat);
   if (!toMe) {
     writeFileSync(POSTED_FLAG, new Date().toISOString() + "\n");
-    await sendVkPostSafe(resultFiles, text);
-    await sendVkPostSafe(tableFiles, tables);
+    await sendVkPostSafe(text, resultsLink);
+    await sendVkPostSafe(tables, tablesLink);
   }
 }
 
