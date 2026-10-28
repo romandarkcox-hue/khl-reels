@@ -1,7 +1,7 @@
 import { CalculateMetadataFunction, Composition, Still, staticFile } from "remotion";
 import { Announce } from "./announce";
 import { AnnounceCard, AnnounceCardProps } from "./AnnounceCard";
-import { BrandAvatar, BrandCover } from "./BrandCards";
+import { BrandAvatar, BrandCover, BrandStory } from "./BrandCards";
 import { ReviewVideo, ReviewVideoProps } from "./review/ReviewVideo";
 import { FPS, HEIGHT as REEL_HEIGHT, WIDTH as REEL_WIDTH } from "./review/shared";
 import { Review } from "./review/types";
@@ -104,6 +104,16 @@ export const RemotionRoot: React.FC = () => {
         />
       ))}
       <Still id="vk-cover" component={BrandCover} width={1920} height={768} />
+      {([1, 2, 3] as const).map((slide) => (
+        <Still
+          key={`vk-story-${slide}`}
+          id={`vk-story-${slide}`}
+          component={BrandStory}
+          width={1080}
+          height={1920}
+          defaultProps={{ slide }}
+        />
+      ))}
     </>
   );
 };

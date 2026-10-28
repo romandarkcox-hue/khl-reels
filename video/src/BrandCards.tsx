@@ -199,3 +199,133 @@ export const BrandCover: React.FC = () => (
     </AbsoluteFill>
   </AbsoluteFill>
 );
+
+// Матч без настоящих клубов: две цветные «эмблемы» с полосками-названиями,
+// посередине время или счёт.
+const DemoMatch: React.FC<{ left: string; right: string; center: string; note?: string }> = ({
+  left,
+  right,
+  center,
+  note,
+}) => {
+  const team = (color: string, align: "flex-start" | "flex-end") => (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: align, gap: 14 }}>
+      <div style={{ width: 84, height: 84, borderRadius: "50%", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: color }} />
+      </div>
+      <div style={{ width: 150, height: 14, borderRadius: 7, background: "rgba(242,246,252,0.55)" }} />
+    </div>
+  );
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        padding: "30px 36px",
+        borderRadius: 28,
+        background: C.row,
+        borderLeft: `8px solid ${left}`,
+        borderRight: `8px solid ${right}`,
+      }}
+    >
+      {team(left, "flex-start")}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+        <div
+          style={{
+            fontSize: 60,
+            fontWeight: 800,
+            padding: "6px 26px",
+            borderRadius: 18,
+            background: "rgba(79,195,247,0.14)",
+          }}
+        >
+          {center}
+        </div>
+        {note && (
+          <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: 4, color: C.muted }}>{note}</div>
+        )}
+      </div>
+      {team(right, "flex-end")}
+    </div>
+  );
+};
+
+const StoryTitle: React.FC<{ over: string; title: React.ReactNode; sub?: React.ReactNode }> = ({
+  over,
+  title,
+  sub,
+}) => (
+  <div style={{ display: "flex", flexDirection: "column" }}>
+    <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: 8, color: C.accent }}>{over}</div>
+    <div style={{ fontSize: 116, fontWeight: 800, lineHeight: 1.0, marginTop: 20 }}>{title}</div>
+    {sub && (
+      <div style={{ fontSize: 38, fontWeight: 500, color: C.muted, marginTop: 30, lineHeight: 1.4 }}>
+        {sub}
+      </div>
+    )}
+  </div>
+);
+
+export type BrandStoryProps = { slide: 1 | 2 | 3 };
+
+// Живая обложка ВК для телефона, 1080×1920. Сверху и снизу экран закрывают
+// кнопки приложения и название группы, поэтому всё главное в середине.
+export const BrandStory: React.FC<BrandStoryProps> = ({ slide }) => (
+  <AbsoluteFill style={{ fontFamily, color: C.text }}>
+    <Background glowAt="85% 15%" glowSize="1000px 900px" />
+    {/* Красная линия и круг вбрасывания, как на льду */}
+    <div style={{ position: "absolute", left: 0, right: 0, top: 957, height: 6, background: "rgba(79,195,247,0.07)" }} />
+    <div
+      style={{
+        position: "absolute",
+        left: 540 - 420,
+        top: 960 - 420,
+        width: 840,
+        height: 840,
+        borderRadius: "50%",
+        border: "6px solid rgba(79,195,247,0.07)",
+      }}
+    />
+    <AbsoluteFill style={{ padding: "380px 90px 520px", justifyContent: "center", gap: 70 }}>
+      {slide === 1 && (
+        <>
+          <StoryTitle
+            over="КХЛ · СЕЗОН 2026/27"
+            title={<>Турнирная<br />таблица<br />КХЛ</>}
+            sub={<>Каждый игровой день:<br />матчи, счета и таблицы</>}
+          />
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {DEMO_ROWS.slice(0, 3).map((row, i) => (
+              <DemoRow key={i} place={i + 1} color={row.color} width={row.width} pts={row.pts} height={92} />
+            ))}
+          </div>
+        </>
+      )}
+      {slide === 2 && (
+        <>
+          <StoryTitle over="КАЖДОЕ УТРО В 7:00" title={<>Матчи<br />дня</>} sub="Время начала и место команд в таблице" />
+          <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+            <DemoMatch left="#43A047" right="#E53935" center="19:00" note="МСК" />
+            <DemoMatch left="#1E88E5" right="#FBC02D" center="19:30" note="МСК" />
+          </div>
+        </>
+      )}
+      {slide === 3 && (
+        <>
+          <StoryTitle over="КАЖДЫЙ ВЕЧЕР" title={<>Счета<br />и таблицы</>} sub="Итоги дня и таблицы «Запад» и «Восток»" />
+          <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+            <DemoMatch left="#8E24AA" right="#1E88E5" center="3 : 2" note="ОТ" />
+            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 10 }}>
+              {DEMO_ROWS.slice(2, 5).map((row, i) => (
+                <React.Fragment key={i}>
+                  {i === 2 && <div style={{ borderTop: `3px dashed ${C.line}`, margin: "4px 0" }} />}
+                  <DemoRow place={i + 7} color={row.color} width={row.width} pts={row.pts - 8} height={80} />
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </AbsoluteFill>
+  </AbsoluteFill>
+);
