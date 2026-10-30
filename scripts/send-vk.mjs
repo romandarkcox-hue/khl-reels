@@ -48,16 +48,37 @@ function toGif(path) {
   return out;
 }
 
+// Сервер загрузки ВК иногда отвечает страницей ошибки вместо JSON (утро 30.10),
+// поэтому загрузка повторяется: до 3 попыток с паузой, каждый раз с новым адресом.
+export async function uploadDoc(groupId, gif, { tries = 3, pauseMs = 5000 } = {}) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const server = await callVk("docs.getWallUploadServer", { group_id: groupId });
+      const form = new FormData();
+      form.append("file", await openAsBlob(gif, { type: "image/gif" }), basename(gif));
+      const res = await fetch(server.upload_url, { method: "POST", body: form });
+      const raw = await res.text();
+      let uploaded;
+      try {
+        uploaded = JSON.parse(raw);
+      } catch {
+        throw new Error(`сервер загрузки ВК ответил не JSON (HTTP ${res.status}): ${raw.slice(0, 80)}`);
+      }
+      if (!uploaded.file) {
+        throw new Error(`ВК не принял гифку ${basename(gif)} (HTTP ${res.status}): ${raw.slice(0, 80)}`);
+      }
+      const { doc } = await callVk("docs.save", { file: uploaded.file, title: basename(gif) });
+      return `doc${doc.owner_id}_${doc.id}`;
+    } catch (e) {
+      if (attempt >= tries) throw e;
+      console.log(`   ВК: попытка ${attempt} не вышла (${e.message}), повтор через ${pauseMs / 1000} с`);
+      await new Promise((r) => setTimeout(r, pauseMs));
+    }
+  }
+}
+
 async function uploadGif(groupId, path) {
-  const gif = toGif(path);
-  const server = await callVk("docs.getWallUploadServer", { group_id: groupId });
-  const form = new FormData();
-  form.append("file", await openAsBlob(gif, { type: "image/gif" }), basename(gif));
-  const res = await fetch(server.upload_url, { method: "POST", body: form });
-  const uploaded = await res.json();
-  if (!uploaded.file) throw new Error(`ВК не принял гифку ${basename(gif)}`);
-  const { doc } = await callVk("docs.save", { file: uploaded.file, title: basename(gif) });
-  return `doc${doc.owner_id}_${doc.id}`;
+  return uploadDoc(groupId, toGif(path));
 }
 
 // Ссылка на Telegram встаёт перед строкой хэштегов (если она есть в конце).
