@@ -200,20 +200,30 @@ export const BrandCover: React.FC = () => (
   </AbsoluteFill>
 );
 
-// Матч без настоящих клубов: две цветные «эмблемы» с полосками-названиями,
-// посередине время или счёт.
-const DemoMatch: React.FC<{ left: string; right: string; center: string; note?: string }> = ({
-  left,
-  right,
-  center,
-  note,
-}) => {
-  const team = (color: string, align: "flex-start" | "flex-end") => (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: align, gap: 14 }}>
-      <div style={{ width: 84, height: 84, borderRadius: "50%", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", background: color }} />
-      </div>
-      <div style={{ width: 150, height: 14, borderRadius: 7, background: "rgba(242,246,252,0.55)" }} />
+export type BrandStoryProps = { slide: 1 | 2 | 3 };
+
+// Безопасная зона живой обложки на телефоне (замер по скриншоту пользователя 05.11):
+// приложение ВК показывает в шапке группы только середину слайда (~x 95–1000,
+// y 410–1340), сверху на неё ложатся кнопки «назад» и «настройки» (y до ~620),
+// снизу слева — аватарка (x 140–350, y 1120–1330). Всё главное — в прямоугольнике
+// SAFE, по центру и крупно. Ниже — то, что видно только при открытии на весь экран.
+const SAFE = { left: 170, top: 640, width: 740, height: 460 };
+
+const StoryHead: React.FC<{ over: string; title: React.ReactNode; sub: string }> = ({ over, title, sub }) => (
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+    <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: 7, color: C.accent }}>{over}</div>
+    <div style={{ fontSize: 112, fontWeight: 800, lineHeight: 1.02, marginTop: 14, letterSpacing: -2 }}>
+      {title}
+    </div>
+    <div style={{ fontSize: 36, fontWeight: 500, color: C.muted, marginTop: 20 }}>{sub}</div>
+  </div>
+);
+
+// Одна строка матча в безопасной зоне: эмблемы-кружки и время или счёт по центру.
+const MiniMatch: React.FC<{ left: string; right: string; center: string }> = ({ left, right, center }) => {
+  const badge = (color: string) => (
+    <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: 44, height: 44, borderRadius: "50%", background: color }} />
     </div>
   );
   return (
@@ -221,111 +231,67 @@ const DemoMatch: React.FC<{ left: string; right: string; center: string; note?: 
       style={{
         display: "flex",
         alignItems: "center",
-        padding: "30px 36px",
-        borderRadius: 28,
+        justifyContent: "space-between",
+        width: 560,
+        padding: "18px 28px",
+        borderRadius: 26,
         background: C.row,
-        borderLeft: `8px solid ${left}`,
-        borderRight: `8px solid ${right}`,
       }}
     >
-      {team(left, "flex-start")}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-        <div
-          style={{
-            fontSize: 60,
-            fontWeight: 800,
-            padding: "6px 26px",
-            borderRadius: 18,
-            background: "rgba(79,195,247,0.14)",
-          }}
-        >
-          {center}
-        </div>
-        {note && (
-          <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: 4, color: C.muted }}>{note}</div>
-        )}
-      </div>
-      {team(right, "flex-end")}
+      {badge(left)}
+      <div style={{ fontSize: 64, fontWeight: 800 }}>{center}</div>
+      {badge(right)}
     </div>
   );
 };
 
-const StoryTitle: React.FC<{ over: string; title: React.ReactNode; sub?: React.ReactNode }> = ({
-  over,
-  title,
-  sub,
-}) => (
-  <div style={{ display: "flex", flexDirection: "column" }}>
-    <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: 8, color: C.accent }}>{over}</div>
-    <div style={{ fontSize: 116, fontWeight: 800, lineHeight: 1.0, marginTop: 20 }}>{title}</div>
-    {sub && (
-      <div style={{ fontSize: 38, fontWeight: 500, color: C.muted, marginTop: 30, lineHeight: 1.4 }}>
-        {sub}
+const SLIDES: Record<1 | 2 | 3, { over: string; title: React.ReactNode; sub: string; demo: React.ReactNode }> = {
+  1: {
+    over: "СЕЗОН 2026/27",
+    title: <>Таблица КХЛ</>,
+    sub: "матчи · счета · таблицы",
+    demo: (
+      <div style={{ width: 560, display: "flex", flexDirection: "column", gap: 12 }}>
+        {DEMO_ROWS.slice(0, 2).map((row, i) => (
+          <DemoRow key={i} place={i + 1} color={row.color} width={row.width} pts={row.pts} height={70} />
+        ))}
       </div>
-    )}
-  </div>
-);
+    ),
+  },
+  2: {
+    over: "КАЖДОЕ УТРО В 7:00",
+    title: <>Матчи дня</>,
+    sub: "время и места в таблице",
+    demo: <MiniMatch left="#43A047" right="#E53935" center="19:30" />,
+  },
+  3: {
+    over: "КАЖДЫЙ ВЕЧЕР",
+    title: <>Счета дня</>,
+    sub: "итоги и таблицы конференций",
+    demo: <MiniMatch left="#8E24AA" right="#1E88E5" center="3 : 2" />,
+  },
+};
 
-export type BrandStoryProps = { slide: 1 | 2 | 3 };
-
-// Живая обложка ВК для телефона, 1080×1920. Сверху и снизу экран закрывают
-// кнопки приложения и название группы, поэтому всё главное в середине.
-export const BrandStory: React.FC<BrandStoryProps> = ({ slide }) => (
-  <AbsoluteFill style={{ fontFamily, color: C.text }}>
-    <Background glowAt="85% 15%" glowSize="1000px 900px" />
-    {/* Красная линия и круг вбрасывания, как на льду */}
-    <div style={{ position: "absolute", left: 0, right: 0, top: 957, height: 6, background: "rgba(79,195,247,0.07)" }} />
-    <div
-      style={{
-        position: "absolute",
-        left: 540 - 420,
-        top: 960 - 420,
-        width: 840,
-        height: 840,
-        borderRadius: "50%",
-        border: "6px solid rgba(79,195,247,0.07)",
-      }}
-    />
-    <AbsoluteFill style={{ padding: "380px 90px 520px", justifyContent: "center", gap: 70 }}>
-      {slide === 1 && (
-        <>
-          <StoryTitle
-            over="КХЛ · СЕЗОН 2026/27"
-            title={<>Турнирная<br />таблица<br />КХЛ</>}
-            sub={<>Каждый игровой день:<br />матчи, счета и таблицы</>}
-          />
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {DEMO_ROWS.slice(0, 3).map((row, i) => (
-              <DemoRow key={i} place={i + 1} color={row.color} width={row.width} pts={row.pts} height={92} />
-            ))}
-          </div>
-        </>
-      )}
-      {slide === 2 && (
-        <>
-          <StoryTitle over="КАЖДОЕ УТРО В 7:00" title={<>Матчи<br />дня</>} sub="Время начала и место команд в таблице" />
-          <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-            <DemoMatch left="#43A047" right="#E53935" center="19:00" note="МСК" />
-            <DemoMatch left="#1E88E5" right="#FBC02D" center="19:30" note="МСК" />
-          </div>
-        </>
-      )}
-      {slide === 3 && (
-        <>
-          <StoryTitle over="КАЖДЫЙ ВЕЧЕР" title={<>Счета<br />и таблицы</>} sub="Итоги дня и таблицы «Запад» и «Восток»" />
-          <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-            <DemoMatch left="#8E24AA" right="#1E88E5" center="3 : 2" note="ОТ" />
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 10 }}>
-              {DEMO_ROWS.slice(2, 5).map((row, i) => (
-                <React.Fragment key={i}>
-                  {i === 2 && <div style={{ borderTop: `3px dashed ${C.line}`, margin: "4px 0" }} />}
-                  <DemoRow place={i + 7} color={row.color} width={row.width} pts={row.pts - 8} height={80} />
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+// Живая обложка ВК для телефона, 1080×1920.
+export const BrandStory: React.FC<BrandStoryProps> = ({ slide }) => {
+  const s = SLIDES[slide];
+  return (
+    <AbsoluteFill style={{ fontFamily, color: C.text }}>
+      <Background glowAt="50% 38%" glowSize="900px 700px" />
+      <div
+        style={{
+          position: "absolute",
+          ...SAFE,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 34,
+        }}
+      >
+        <StoryHead over={s.over} title={s.title} sub={s.sub} />
+        {s.demo}
+      </div>
     </AbsoluteFill>
-  </AbsoluteFill>
-);
+  );
+};
