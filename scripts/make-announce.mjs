@@ -12,56 +12,61 @@ import { OUT_DIR, fetchDayMatches, renderDayCards } from "./day-cards.mjs";
 import { fail, moscowNow } from "./khl.mjs";
 import { channelId, sendPost } from "./send-telegram.mjs";
 import { sendVkPostSafe } from "./send-vk.mjs";
+import { CHANNEL_LINE, clubTags, fullName } from "./clubs.mjs";
 
 const MONTHS = [
   "января", "февраля", "марта", "апреля", "мая", "июня",
   "июля", "августа", "сентября", "октября", "ноября", "декабря",
 ];
-const CONF_SHORT = { west: "Запад", east: "Восток" };
-
 function formatDay(isoDay) {
   const [, month, day] = isoDay.split("-").map(Number);
   return `${day} ${MONTHS[month - 1]}`;
 }
 
-function teamLabel(t) {
-  return t.rank ? `${t.name} (${t.rank}-е, ${CONF_SHORT[t.conf]})` : t.name;
+
+const CONF_IN = { west: "на Западе", east: "на Востоке" };
+
+// Места двух команд одной строкой: «1-е и 2-е места на Востоке»
+// или «9-е на Востоке и 1-е на Западе».
+function placesLine(m) {
+  const { home: h, away: a } = m;
+  if (!h.rank || !a.rank) return null;
+  if (h.conf === a.conf) return `Места: ${h.rank}-е и ${a.rank}-е ${CONF_IN[h.conf]}`;
+  return `Места: ${h.rank}-е ${CONF_IN[h.conf]} и ${a.rank}-е ${CONF_IN[a.conf]}`;
 }
 
-function matchesWord(n) {
-  const [d, dd] = [n % 10, n % 100];
-  if (d === 1 && dd !== 11) return "матч";
-  if (d >= 2 && d <= 4 && (dd < 12 || dd > 14)) return "матча";
-  return "матчей";
-}
-
-// Заголовок — первая строка, её видно в списке чатов Telegram. Главный матч —
-// пара команд, которые в сумме выше всех в таблице.
-function headline(day, matches) {
-  const date = ` · ${formatDay(day)}`;
-  const pair = (m) => `${m.home.name}${m.home.rank ? ` (${m.home.rank}-е)` : ""} — ${m.away.name}${m.away.rank ? ` (${m.away.rank}-е)` : ""}`;
-  if (matches.length === 1) {
-    return `🏒 Сегодня в КХЛ один матч: ${pair(matches[0])}, начало в ${matches[0].time}${date}`;
-  }
-  const count = `${matches.length} ${matchesWord(matches.length)}`;
-  const ranked = matches.filter((m) => m.home.rank && m.away.rank);
-  if (!ranked.length) return `🏒 Сегодня в КХЛ ${count}${date}`;
-  const main = ranked.reduce((best, m) =>
-    m.home.rank + m.away.rank < best.home.rank + best.away.rank ? m : best);
-  return `🏒 Сегодня в КХЛ ${count}, главный: ${pair(main)}${date}`;
-}
-
+// Один текст для Telegram и ВК (одобрено 05.11): первая строка — заголовок с тем,
+// что ищут («матчи КХЛ сегодня», дата), каждый матч отдельным блоком с полными
+// названиями клубов, в конце ссылка на канал и хэштеги (общие + клубы дня).
+// Подпись в Telegram — не больше 1024 знаков: в загруженный день места
+// переезжают в скобки рядом с клубом, потом убираются города.
 function postText(day, matches) {
-  const lines = matches.map((m) => `${m.time}  ${teamLabel(m.home)} — ${teamLabel(m.away)}`);
-  return [
-    headline(day, matches),
-    "",
-    ...lines,
-    "",
-    "Время московское. В скобках место в таблице конференции.",
-    "",
-    "#КХЛ #хоккей #KHL #матчидня",
-  ].join("\n");
+  const tags = `#КХЛ #хоккей #расписаниеКХЛ ${clubTags(matches.flatMap((m) => [m.home.name, m.away.name]))}`;
+  const build = (withPlaces, withCity) => {
+    const name = (t, inlineRank) =>
+      (withCity ? fullName(t.name) : t.name) + (inlineRank && t.rank ? ` (${t.rank}-е)` : "");
+    const blocks = matches.map((m) => {
+      const lines = [`${m.time} · ${name(m.home, !withPlaces)} — ${name(m.away, !withPlaces)}`];
+      const places = withPlaces && placesLine(m);
+      if (places) lines.push(places);
+      return lines.join("\n");
+    });
+    return [
+      `🏒 Матчи КХЛ сегодня, ${formatDay(day)}: расписание`,
+      "",
+      blocks.join(withPlaces ? "\n\n" : "\n"),
+      "",
+      withPlaces ? "Время московское." : "Время московское, в скобках место в конференции.",
+      CHANNEL_LINE,
+      "",
+      tags,
+    ].join("\n");
+  };
+  for (const [p, c] of [[true, true], [false, true], [false, false]]) {
+    const text = build(p, c);
+    if (text.length <= 1024) return text;
+  }
+  return build(false, false);
 }
 
 const args = process.argv.slice(2);

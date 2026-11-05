@@ -7,6 +7,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import "./env.mjs";
+import { CHANNEL_LINE, clubTags, fullName } from "./clubs.mjs";
 
 const MONTHS = [
   "января", "февраля", "марта", "апреля", "мая", "июня",
@@ -97,14 +98,16 @@ export function buildFacts(standings, previous, day, matches) {
 // Подпись к картинкам в Telegram — не больше 1024 знаков.
 export const MAX_POST_LENGTH = 1024;
 
-const HASHTAGS = "#КХЛ #хоккей #итогидня";
+const HASHTAGS = "#КХЛ #хоккей #результатыКХЛ";
 
 // Подпись второго вечернего поста — таблиц конференций.
 export function tablesText(day) {
   return [
-    `📊 Таблица КХЛ после игрового дня ${formatDay(day)}`,
+    `📊 Турнирная таблица КХЛ после матчей ${formatDay(day)}`,
     "",
-    "Запад ➡️ Восток",
+    "Конференции «Запад» и «Восток»: места, очки и зона плей-офф.",
+    "",
+    CHANNEL_LINE,
     "",
     "#КХЛ #хоккей #таблицаКХЛ",
   ].join("\n");
@@ -203,41 +206,38 @@ function headlineEvent(g) {
   return { weight: margin, text: beat("обыграл") };
 }
 
-// Чтобы глагол не повторялся во втором матче заголовка.
-const SYNONYMS = [["разгромил", "крупно обыграл"], ["обыграл", "победил"]];
-
-// Два самых ярких матча (если не влезают — один) и дата.
+// Заголовок (одобрено 05.11, один текст для Telegram и ВК): что ищут —
+// «результаты КХЛ» и дата, затем самый яркий матч дня.
 export function headline(facts) {
-  const [first, second] = facts.games.map(headlineEvent).sort((a, b) => b.weight - a.weight).map((e) => e.text);
-  const tail = ` · итоги ${formatDay(facts.day)}`;
-  if (!second) return `🏒 ${first}${tail}`;
-  const [word, alt] = SYNONYMS.find(([w]) => first.includes(w) && second.includes(w)) ?? [];
-  const two = `🏒 ${first}; ${word ? second.replace(word, alt) : second}${tail}`;
-  return two.length <= 120 ? two : `🏒 ${first}${tail}`;
+  const [best] = facts.games.map(headlineEvent).sort((a, b) => b.weight - a.weight);
+  return `🏒 Результаты КХЛ ${formatDay(facts.day)}: ${best.text}`;
 }
 
-function templateLines(facts, perMatch) {
+function templateLines(facts, perMatch, withCity = true) {
+  const name = (n) => (withCity ? fullName(n) : n);
   const lines = [headline(facts), ""];
   for (const g of facts.games) {
     const winner = g.winner === "home" ? g.home : g.away;
     const story = matchHighlights(g).slice(0, perMatch).join(", ");
     lines.push(
-      `${g.home} — ${g.away} ${g.score}${OTS_LABEL[g.ots] ?? ""}`,
+      `${name(g.home)} — ${name(g.away)} ${g.score}${OTS_LABEL[g.ots] ?? ""}`,
       `✅ ${winner}${story ? `: ${story}` : ""}.`,
       "",
     );
   }
-  lines.push(HASHTAGS);
+  lines.push(CHANNEL_LINE, "", `${HASHTAGS} ${clubTags(facts.games.flatMap((g) => [g.home, g.away]))}`);
   return lines.join("\n");
 }
 
 // В загруженный день описания сокращаются, чтобы текст поместился под картинками.
 export function templateText(facts) {
-  for (const perMatch of [3, 2, 1, 0]) {
-    const text = templateLines(facts, perMatch);
-    if (text.length <= MAX_POST_LENGTH) return text;
+  for (const withCity of [true, false]) {
+    for (const perMatch of [3, 2, 1, 0]) {
+      const text = templateLines(facts, perMatch, withCity);
+      if (text.length <= MAX_POST_LENGTH) return text;
+    }
   }
-  return templateLines(facts, 0);
+  return templateLines(facts, 0, false);
 }
 
 const SYSTEM_PROMPT = `Ты ведёшь Telegram-канал про хоккей и каждый вечер после матчей КХЛ пишешь подпись к посту с картинкой счетов матчей дня (таблицы конференций выходят отдельным постом).
