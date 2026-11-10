@@ -1,8 +1,13 @@
-// Публикация поста на стене группы ВКонтакте: те же картинки (в виде гифок) и текст.
+// Публикация поста на стене группы ВКонтакте: те же картинки и текст.
 //
-// Запуск: node scripts/send-vk.mjs a.jpg b.jpg --text-file video/out/announce.txt [--link https://t.me/KHLtablitca/43]
+// Запуск: node scripts/send-vk.mjs a.jpg b.jpg --text-file video/out/announce.txt [--delayed]
+//   --delayed — отложенная запись через месяц (видна только администраторам), для проверки.
 //
-// Берёт VK_GROUP_TOKEN (ключ сообщества) из .env или окружения.
+// Основной способ (с 2026-11-10): ключ пользователя-администратора VK_USER_TOKEN
+// (права wall, photos, groups, offline). С ним картинки идут обычными фото, все
+// в одной записи (до 10). Номер группы — VK_GROUP_ID (по умолчанию khltable).
+//
+// Запасной способ — VK_GROUP_TOKEN (ключ сообщества), картинки гифками:
 // Обычные картинки с ключом сообщества в пост не попадают (проверено 2026-10-28):
 // photos.getWallUploadServer и загрузка в альбом дают ошибку 27, а «фото для
 // сообщений» и jpg-файл (docs.getWallUploadServer) wall.post молча выбрасывает;
@@ -22,10 +27,12 @@ const VERSION = "5.199";
 const VIDEO_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "video");
 
 const token = process.env.VK_GROUP_TOKEN;
+const userToken = process.env.VK_USER_TOKEN;
+const GROUP_ID = Number(process.env.VK_GROUP_ID || 232858456);
 
-async function callVk(method, params = {}) {
-  if (!token) throw new Error("не задан VK_GROUP_TOKEN (в .env или в окружении)");
-  const body = new URLSearchParams({ ...params, access_token: token, v: VERSION });
+async function callVk(method, params = {}, key = token) {
+  if (!key) throw new Error("не задан ключ ВК (VK_USER_TOKEN или VK_GROUP_TOKEN)");
+  const body = new URLSearchParams({ ...params, access_token: key, v: VERSION });
   const res = await fetch(`${API}/${method}`, { method: "POST", body });
   const data = await res.json().catch(() => ({}));
   if (data.error) {
@@ -122,6 +129,47 @@ async function uploadGif(groupId, path) {
   return uploadDoc(groupId, toGif(path));
 }
 
+// Обычное фото на стену группы (только ключ пользователя). Сервер загрузки ВК
+// иногда сбоит (ошибка 500, пустой ответ — 10.11), поэтому до 5 попыток.
+async function uploadPhoto(groupId, path, { tries = 5, pauseMs = 5000 } = {}) {
+  const type = /\.png$/i.test(path) ? "image/png" : "image/jpeg";
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const server = await callVk("photos.getWallUploadServer", { group_id: groupId }, userToken);
+      const form = new FormData();
+      form.append("photo", await openAsBlob(resolve(path), { type }), basename(path));
+      const res = await fetch(server.upload_url, { method: "POST", body: form });
+      const raw = await res.text();
+      let up;
+      try {
+        up = JSON.parse(raw);
+      } catch {
+        throw new Error(`сервер загрузки ВК ответил не JSON (HTTP ${res.status}): ${raw.slice(0, 80)}`);
+      }
+      if (!up.photo || up.photo === "[]") {
+        throw new Error(`ВК не принял картинку ${basename(path)}: ${raw.slice(0, 80)}`);
+      }
+      const [photo] = await callVk(
+        "photos.saveWallPhoto",
+        { group_id: groupId, server: up.server, photo: up.photo, hash: up.hash },
+        userToken,
+      );
+      return `photo${photo.owner_id}_${photo.id}`;
+    } catch (e) {
+      if (attempt >= tries) throw e;
+      console.log(`   ВК: фото, попытка ${attempt} не вышла (${e.message}), повтор через ${pauseMs / 1000} с`);
+      await new Promise((r) => setTimeout(r, pauseMs));
+    }
+  }
+}
+
+// Все картинки обычными фото в одной записи. Возвращает ссылку на запись.
+export async function sendVkPhotoPost(photoPaths, text, { delayed = false } = {}) {
+  const attachments = [];
+  for (const path of photoPaths.slice(0, 10)) attachments.push(await uploadPhoto(GROUP_ID, path));
+  return wallPost(GROUP_ID, text, attachments, { key: userToken, delayed });
+}
+
 // Ссылка на Telegram встаёт перед строкой хэштегов (если она есть в конце).
 function withLink(text, link) {
   if (!link) return text;
@@ -135,17 +183,16 @@ function withLink(text, link) {
 }
 
 async function groupId() {
+  if (!token) return GROUP_ID;
   const [group] = (await callVk("groups.getById")).groups;
   return group.id;
 }
 
-async function wallPost(id, message, attachments = []) {
-  const { post_id } = await callVk("wall.post", {
-    owner_id: -id,
-    from_group: 1,
-    message,
-    attachments: attachments.join(","),
-  });
+// delayed — отложенная запись через 30 дней: её видят только администраторы.
+async function wallPost(id, message, attachments = [], { key = userToken || token, delayed = false } = {}) {
+  const params = { owner_id: -id, from_group: 1, message, attachments: attachments.join(",") };
+  if (delayed) params.publish_date = Math.floor(Date.now() / 1000) + 30 * 86400;
+  const { post_id } = await callVk("wall.post", params, key);
   return `https://vk.ru/wall-${id}_${post_id}`;
 }
 
@@ -171,12 +218,29 @@ export async function sendVkPost(photoPaths, text) {
 }
 
 // Для утреннего и вечернего скриптов: ВК публикуется после Telegram, и его сбой
-// не должен ронять запуск. Не вышло с гифками — текст со ссылкой на Telegram.
-// Об ошибках пишем вам в личку Telegram.
+// не должен ронять запуск. Порядок: обычные фото (ключ пользователя) → гифки
+// (ключ сообщества) → текст со ссылкой на Telegram. Об ошибках пишем в личку Telegram.
 export async function sendVkPostSafe(photoPaths, text, link) {
-  if (!token) {
-    console.log("   ВК пропускаю: не задан VK_GROUP_TOKEN.");
+  if (!token && !userToken) {
+    console.log("   ВК пропускаю: не заданы VK_USER_TOKEN и VK_GROUP_TOKEN.");
     return;
+  }
+  if (userToken) {
+    try {
+      console.log(`   ВК (фото): ${await sendVkPhotoPost(photoPaths, text)}`);
+      return;
+    } catch (err) {
+      console.error(`   ВК с фото не вышло: ${err.message}`);
+      await sendMessage(`⚠️ ВК: обычные фото не загрузились (${err.message}), пробую запасной способ.`);
+      if (!token) {
+        try {
+          console.log(`   ВК (текст): ${await wallPost(GROUP_ID, withLink(text, link))}`);
+        } catch (err2) {
+          await sendMessage(`⚠️ Пост в ВК не опубликован (в Telegram вышел): ${err2.message}`);
+        }
+        return;
+      }
+    }
   }
   try {
     console.log(`   ВК: ${(await sendVkPost(photoPaths, text)).join(", ")}`);
@@ -198,10 +262,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const valueOf = (flag) => (args.includes(flag) ? args[args.indexOf(flag) + 1] : undefined);
   const textFile = valueOf("--text-file");
-  const photos = args.filter((a, i) => !a.startsWith("--") && !args[i - 1]?.startsWith("--"));
+  const photos = args.filter((a, i) => !a.startsWith("--") && args[i - 1] !== "--text-file");
   const text = textFile ? readFileSync(textFile, "utf8").trim() : "";
+  const delayed = args.includes("--delayed");
   try {
-    console.log("Пост в ВК:", (await sendVkPost(photos, text)).join(", "));
+    if (userToken) console.log("Пост в ВК:", await sendVkPhotoPost(photos, text, { delayed }));
+    else console.log("Пост в ВК:", (await sendVkPost(photos, text)).join(", "));
   } catch (err) {
     console.error(`Ошибка: ${err.message}`);
     process.exit(1);
