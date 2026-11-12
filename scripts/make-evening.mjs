@@ -42,16 +42,29 @@ if (played.length < matches.length && !partial) {
   console.log("   ещё не все матчи закончились (для поста по сыгранным добавьте --partial).");
   process.exit(0);
 }
-// В протоколе столько же голов, сколько в счёте (победный буллит тоже записан голом).
+// Протоколы не ждём (пользователь 12.11: важнее оперативность): у матча без
+// протокола в подписи будет только счёт и победитель.
 const noProtocol = played.filter((m) => m.goals.length < m.score.home + m.score.away);
-if (noProtocol.length && !partial) {
+if (noProtocol.length) {
   const names = noProtocol.map((m) => `${m.home.name} — ${m.away.name}`).join(", ");
-  console.log(`   протоколы ещё не заполнены: ${names}. Жду (без ожидания: --partial).`);
-  process.exit(0);
+  console.log(`   протоколы ещё не заполнены: ${names} — публикую без описания этих матчей.`);
 }
 // Прошлый снимок читаем до сохранения сегодняшнего. Снимок дня пишем только
 // при публикации в канал, пробные запуски его не трогают.
 const previous = loadPreviousSnapshot(HISTORY_DIR, day);
+// Таблица на сайте могла ещё не учесть сегодняшние матчи: тогда у сыгравшей
+// команды столько же игр, сколько во вчерашнем снимке. Ждём следующей проверки.
+if (previous && !partial) {
+  const gpNow = new Map(standings.conferences.flatMap((c) => c.teams.map((t) => [t.clubId, t.gp])));
+  const gpBefore = new Map(previous.conferences.flatMap((c) => c.teams.map((t) => [t.clubId, t.gp])));
+  const stale = played
+    .flatMap((m) => [m.home, m.away])
+    .filter((t) => gpBefore.has(t.id) && gpNow.get(t.id) <= gpBefore.get(t.id));
+  if (stale.length) {
+    console.log(`   таблица ещё не обновилась: ${stale.map((t) => t.name).join(", ")}. Жду (без ожидания: --partial).`);
+    process.exit(0);
+  }
+}
 saveStandings(standings, day, { writeSnapshot: !noSend && !toMe });
 
 console.log("2/4 Рисую картинки...");

@@ -43,6 +43,7 @@ export async function fetchDayMatches(day, { withGoals = false } = {}) {
   const team = (id) => {
     const t = teamById.get(id);
     return {
+      id,
       name: t?.name ?? calendar.TEAMS?.[id]?.NAME ?? String(id),
       logo: t?.logo ?? null,
       rank: t?.rank ?? null,
