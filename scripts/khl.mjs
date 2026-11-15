@@ -5,8 +5,8 @@ export const TOURNAMENT = 1436; // регулярный чемпионат 2026/
 export const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 
-const SESSION_ATTEMPTS = 4;
-const SESSION_RETRY_MS = 30_000;
+const SESSION_ATTEMPTS = 6;
+const SESSION_RETRY_MS = 120_000;
 
 export function fail(message) {
   console.error(`Ошибка: ${message}`);
