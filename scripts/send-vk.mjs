@@ -30,13 +30,19 @@ const token = process.env.VK_GROUP_TOKEN;
 const userToken = process.env.VK_USER_TOKEN;
 const GROUP_ID = Number(process.env.VK_GROUP_ID || 232858456);
 
+// 9 Flood control: ВК временно запретил ключу действия (с 12.11 ключ пользователя
+// не работал 3 дня). Повторы только продлевают запрет, поэтому сразу сдаёмся.
+const FLOOD = 9;
+
 async function callVk(method, params = {}, key = token) {
   if (!key) throw new Error("не задан ключ ВК (VK_USER_TOKEN или VK_GROUP_TOKEN)");
   const body = new URLSearchParams({ ...params, access_token: key, v: VERSION });
   const res = await fetch(`${API}/${method}`, { method: "POST", body });
   const data = await res.json().catch(() => ({}));
   if (data.error) {
-    throw new Error(`ВК ответил на ${method}: ${data.error.error_code} ${data.error.error_msg}`);
+    const err = new Error(`ВК ответил на ${method}: ${data.error.error_code} ${data.error.error_msg}`);
+    err.code = data.error.error_code;
+    throw err;
   }
   if (!data.response) throw new Error(`ВК ответил на ${method} без данных (HTTP ${res.status})`);
   return data.response;
@@ -118,7 +124,7 @@ export async function uploadDoc(groupId, gif, { tries = 3, pauseMs = 5000 } = {}
       }
       return `doc${docId}`;
     } catch (e) {
-      if (attempt >= tries) throw e;
+      if (attempt >= tries || e.code === FLOOD) throw e;
       console.log(`   ВК: попытка ${attempt} не вышла (${e.message}), повтор через ${pauseMs / 1000} с`);
       await new Promise((r) => setTimeout(r, pauseMs));
     }
@@ -156,7 +162,7 @@ async function uploadPhoto(groupId, path, { tries = 5, pauseMs = 5000 } = {}) {
       );
       return `photo${photo.owner_id}_${photo.id}`;
     } catch (e) {
-      if (attempt >= tries) throw e;
+      if (attempt >= tries || e.code === FLOOD) throw e;
       console.log(`   ВК: фото, попытка ${attempt} не вышла (${e.message}), повтор через ${pauseMs / 1000} с`);
       await new Promise((r) => setTimeout(r, pauseMs));
     }
@@ -207,12 +213,12 @@ export async function sendVkPost(photoPaths, text) {
   const id = await groupId();
   const attachments = [];
   for (const path of photoPaths) attachments.push(await uploadGif(id, path));
-  if (attachments.length === 0) return [await wallPost(id, text)];
+  if (attachments.length === 0) return [await wallPost(id, text, [], { key: token })];
   const title = text.trim().split("\n")[0];
   const links = [];
   for (let i = attachments.length - 1; i >= 0; i--) {
     const message = i === 0 ? text : `${title} (${i + 1}/${attachments.length})`;
-    links.unshift(await wallPost(id, message, [attachments[i]]));
+    links.unshift(await wallPost(id, message, [attachments[i]], { key: token }));
   }
   return links;
 }
@@ -248,7 +254,7 @@ export async function sendVkPostSafe(photoPaths, text, link) {
   } catch (err) {
     console.error(`   ВК с гифками не вышло: ${err.message}`);
     try {
-      console.log(`   ВК (текст): ${await wallPost(await groupId(), withLink(text, link))}`);
+      console.log(`   ВК (текст): ${await wallPost(await groupId(), withLink(text, link), [], { key: token })}`);
       await sendMessage(`⚠️ Пост в ВК вышел без картинок (только текст): ${err.message}`);
     } catch (err2) {
       console.error(`   ВК не опубликован: ${err2.message}`);
