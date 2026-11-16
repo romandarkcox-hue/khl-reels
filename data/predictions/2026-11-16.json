@@ -22,7 +22,13 @@
       },
       "favorite": "home",
       "prob": 0.67,
-      "confident": true
+      "confident": true,
+      "score": {
+        "home": 1,
+        "away": 2,
+        "ots": "SO"
+      },
+      "hit": false
     },
     {
       "gameId": 902268,
@@ -39,7 +45,14 @@
       },
       "favorite": "home",
       "prob": 0.82,
-      "confident": true
+      "confident": true,
+      "score": {
+        "home": 3,
+        "away": 0,
+        "ots": null
+      },
+      "hit": true
     }
-  ]
+  ],
+  "checkedAt": "2026-11-16T22:14:31+03:00"
 }
