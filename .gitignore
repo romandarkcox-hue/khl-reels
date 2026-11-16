@@ -12,3 +12,5 @@ video/public/results.json
 video/public/voice/
 video/public/music/
 whisper.cpp/
+video/public/predict.json
+video/public/check.json

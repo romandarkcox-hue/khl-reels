@@ -2,6 +2,8 @@ import { CalculateMetadataFunction, Composition, Still, staticFile } from "remot
 import { Announce } from "./announce";
 import { AnnounceCard, AnnounceCardProps } from "./AnnounceCard";
 import { BrandAvatar, BrandCover, BrandStory } from "./BrandCards";
+import { HitrateAvatar } from "./HitrateAvatar";
+import { PredictCard, PredictCardProps, PredictData } from "./PredictCard";
 import { ReviewVideo, ReviewVideoProps } from "./review/ReviewVideo";
 import { FPS, HEIGHT as REEL_HEIGHT, WIDTH as REEL_WIDTH } from "./review/shared";
 import { Review } from "./review/types";
@@ -34,6 +36,15 @@ const loadDayCard: CalculateMetadataFunction<AnnounceCardProps> = async ({ props
   }
   const announce = (await res.json()) as Announce;
   return { props: { ...props, announce } };
+};
+
+// Канал прогнозов: public/predict.json и public/check.json.
+const loadPredict: CalculateMetadataFunction<PredictCardProps> = async ({ props }) => {
+  const res = await fetch(staticFile(`${props.kind}.json`));
+  if (!res.ok) {
+    throw new Error(`Нет public/${props.kind}.json. Сначала запустите node scripts/hitrate.mjs`);
+  }
+  return { props: { ...props, data: (await res.json()) as PredictData } };
 };
 
 // Reels «Итоги игрового дня»: длительность = сумма длительностей сцен из public/review.json.
@@ -92,6 +103,28 @@ export const RemotionRoot: React.FC = () => {
           />
         )),
       )}
+      {/* Канал прогнозов: утро (predict) и вечерняя проверка (check) */}
+      {(["predict", "check"] as const).map((kind) => (
+        <Still
+          key={kind}
+          id={kind}
+          component={PredictCard}
+          width={WIDTH}
+          height={HEIGHT}
+          defaultProps={{ kind, data: null }}
+          calculateMetadata={loadPredict}
+        />
+      ))}
+      {(["a", "b"] as const).map((variant) => (
+        <Still
+          key={`hitrate-avatar-${variant}`}
+          id={`hitrate-avatar-${variant}`}
+          component={HitrateAvatar}
+          width={1000}
+          height={1000}
+          defaultProps={{ variant }}
+        />
+      ))}
       {/* Оформление группы ВК: аватарка (два варианта) и обложка */}
       {(["a", "b"] as const).map((variant) => (
         <Still

@@ -1,0 +1,107 @@
+# Канал «ПРОГНОЗЫ КХЛ | HITRATE AI» (t.me/prognozykkhl): в 9:00 по Москве прогноз на матчи дня.
+# Прогноз записывается в журнал data/predictions/ГГГГ-ММ-ДД.json, он же служит меткой
+# «уже опубликовано». Начавшиеся матчи в прогноз не попадают.
+# Вечернюю проверку и HitRate публикует воркфлоу «Итоги дня» (evening-review.yml).
+# Запускают два будильника: расписание GitHub и cron-job.org.
+
+name: Прогноз 9:00
+
+on:
+  schedule:
+    # 06:00 UTC = 9:00 МСК.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      day:
+        description: "День ГГГГ-ММ-ДД (пусто = сегодня)"
+        required: false
+
+concurrency:
+  group: hitrate-predict
+  cancel-in-progress: false
+
+permissions:
+  contents: write # чтобы закоммитить журнал прогнозов
+
+jobs:
+  predict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Забрать код
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Прогноз сегодня уже опубликован?
+        id: done
+        env:
+          INPUT_DAY: ${{ inputs.day }}
+        run: |
+          DAY="${INPUT_DAY:-$(TZ=Europe/Moscow date +%F)}"
+          echo "day=$DAY" >> "$GITHUB_OUTPUT"
+          if [ -f "data/predictions/$DAY.json" ]; then
+            echo "Журнал data/predictions/$DAY.json есть, ничего не делаю."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Установить Node.js
+        if: steps.done.outputs.skip != 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            video/package-lock.json
+
+      - name: Установить зависимости
+        if: steps.done.outputs.skip != 'true'
+        run: |
+          npm ci
+          npm ci --prefix video
+
+      - name: Прогноз в канал
+        if: steps.done.outputs.skip != 'true'
+        env:
+          HITRATE_BOT_TOKEN: ${{ secrets.HITRATE_BOT_TOKEN }}
+          HITRATE_CHANNEL_ID: ${{ secrets.HITRATE_CHANNEL_ID }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/hitrate.mjs predict "${{ steps.done.outputs.day }}"
+
+      - name: Закоммитить журнал прогнозов
+        if: always() && steps.done.outputs.skip != 'true'
+        env:
+          DAY: ${{ steps.done.outputs.day }}
+        run: |
+          # Журнал пишется до отправки в Telegram — коммитим его даже при сбое отправки,
+          # чтобы повторный запуск не сделал второй прогноз.
+          if [ ! -f "data/predictions/$DAY.json" ]; then
+            echo "Прогноза нет (нет матчей или все уже начались)."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/predictions
+          git commit -m "Прогноз за $DAY"
+          git pull --rebase
+          git push
+
+      - name: Сохранить картинку как файл запуска
+        if: steps.done.outputs.skip != 'true' || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: predict
+          path: video/out/predict.jpg
+          if-no-files-found: ignore
+
+      - name: Сообщить в Telegram о сбое
+        if: failure()
+        env:
+          HITRATE_BOT_TOKEN: ${{ secrets.HITRATE_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${HITRATE_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=⚠️ Прогноз HitRate не опубликован. Подробности: ${RUN_URL}" > /dev/null

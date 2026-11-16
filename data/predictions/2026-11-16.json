@@ -1,0 +1,45 @@
+{
+  "day": "2026-11-16",
+  "madeAt": "2026-11-16T17:47:59+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902267,
+      "time": "19:30",
+      "home": {
+        "id": 2,
+        "name": "ЦСКА",
+        "rating": 1628
+      },
+      "away": {
+        "id": 54,
+        "name": "Амур",
+        "rating": 1520
+      },
+      "favorite": "home",
+      "prob": 0.67,
+      "confident": true
+    },
+    {
+      "gameId": 902268,
+      "time": "19:30",
+      "home": {
+        "id": 1,
+        "name": "Локомотив",
+        "rating": 1605
+      },
+      "away": {
+        "id": 451,
+        "name": "ХК Сочи",
+        "rating": 1357
+      },
+      "favorite": "home",
+      "prob": 0.82,
+      "confident": true
+    }
+  ]
+}

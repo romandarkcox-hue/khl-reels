@@ -134,6 +134,40 @@ jobs:
           git pull --rebase
           git push
 
+      # Канал прогнозов (t.me/prognozykkhl): проверка утреннего прогноза и HitRate.
+      # Ошибка здесь не мешает основному посту (continue-on-error), о ней приходит сообщение.
+      - name: Проверка прогнозов HitRate
+        id: hitrate
+        if: steps.go.outputs.build == 'true'
+        continue-on-error: true
+        env:
+          DAY: ${{ steps.day.outputs.day }}
+          HITRATE_BOT_TOKEN: ${{ secrets.HITRATE_BOT_TOKEN }}
+          HITRATE_CHANNEL_ID: ${{ secrets.HITRATE_CHANNEL_ID }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          git pull --rebase # журнал прогнозов мог прийти утренним коммитом
+          node scripts/hitrate.mjs check "$DAY"
+          if [ -n "$(git status --porcelain data/predictions)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/predictions
+            git commit -m "Проверка прогнозов за $DAY"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Сообщить о сбое проверки прогнозов
+        if: steps.hitrate.outcome == 'failure'
+        env:
+          HITRATE_BOT_TOKEN: ${{ secrets.HITRATE_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${HITRATE_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=⚠️ Вечерняя проверка прогнозов HitRate не опубликована. Подробности: ${RUN_URL}" > /dev/null
+
       - name: Сохранить картинки как файлы запуска
         if: steps.go.outputs.build == 'true' || failure()
         uses: actions/upload-artifact@v7

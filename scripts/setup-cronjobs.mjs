@@ -23,6 +23,13 @@ const JOBS = [
     minutes: [0],
   },
   {
+    // Канал прогнозов t.me/prognozykkhl
+    title: "KHL: Прогноз 9:00",
+    workflow: "hitrate-predict.yml",
+    hours: [9],
+    minutes: [0],
+  },
+  {
     // Те же проверки, что у расписания GitHub: с 20:10 до 01:50 МСК каждые 20 минут.
     title: "KHL: Итоги дня",
     workflow: "evening-review.yml",
