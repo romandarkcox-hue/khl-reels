@@ -30,6 +30,21 @@ const pct = (p) => `${Math.round(p.prob * 100)}%`;
 const favName = (p) => fullName(p[p.favorite].name);
 const pair = (p) => `${fullName(p.home.name)} — ${fullName(p.away.name)}`;
 
+// Ожидаемые шайбы (справочно, в HitRate не входят). Заметно больше среднего по лиге → ⚡,
+// заметно меньше → 🧱. Старые записи журнала без goals — пустая строка.
+const GOALS_DIFF = 0.4;
+const goalsMark = (p) =>
+  p.goals == null ? "" : p.goals >= p.leagueGoals + GOALS_DIFF ? "⚡" : p.goals <= p.leagueGoals - GOALS_DIFF ? "🧱" : "";
+// 5,4 шайбы (дробное — всегда «шайбы»), 6 шайб, 4 шайбы.
+export const goalsWord = (x) => (Number.isInteger(x) && (x % 10 < 2 || x % 10 > 4 || (x % 100 >= 12 && x % 100 <= 14)) ? "шайб" : "шайбы");
+const goalsText = (p) => (p.goals == null ? "" : `${goalsMark(p)}~${String(p.goals).replace(".", ",")} ${goalsWord(p.goals)}`);
+function goalsLegend(predictions) {
+  const p = predictions.find((x) => x.goals != null);
+  if (!p) return [];
+  const avg = String(p.leagueGoals).replace(".", ",");
+  return [`🏒 Шайбы — сколько ждём в матче (в среднем по лиге ${avg}). ⚡ больше обычного, 🧱 плотная игра`];
+}
+
 // Логотипы: те же файлы, что у основного канала (public/logos/ID.png).
 async function logoMap() {
   const session = await openSession("/standings/");
@@ -73,15 +88,17 @@ function predictText(day, predictions, hitrate) {
   const lines = [`🎯 Прогнозы КХЛ на ${dateText(day)} · HitRate AI`, ""];
   if (confident.length) {
     lines.push(confident.length === 1 ? "🔥 Уверенный прогноз дня" : "🔥 Уверенные прогнозы дня");
-    for (const p of confident) lines.push(`${p.time} ${pair(p)}`, `→ победа: ${favName(p)}, ${pct(p)}`);
+    for (const p of confident) {
+      lines.push(`${p.time} ${pair(p)}`, `→ победа: ${favName(p)}, ${pct(p)}${p.goals == null ? "" : " · " + goalsText(p)}`);
+    }
   } else {
     lines.push("🔥 Уверенных прогнозов сегодня нет: все матчи примерно равные");
   }
   if (rest.length) {
     lines.push("", "📊 Остальные матчи");
-    for (const p of rest) lines.push(`${p.time} ${pair(p)} · ${favName(p)} ${pct(p)}`);
+    for (const p of rest) lines.push(`${p.time} ${pair(p)} · ${favName(p)} ${pct(p)}${p.goals == null ? "" : " · " + goalsText(p)}`);
   }
-  lines.push("", hitrateLine(hitrate), "", DISCLAIMER, CHANNEL_LINE, "", tags(predictions));
+  lines.push("", ...goalsLegend(predictions), hitrateLine(hitrate), "", DISCLAIMER, CHANNEL_LINE, "", tags(predictions));
   return lines.join("\n");
 }
 

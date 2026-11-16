@@ -26,6 +26,8 @@ export type PredictMatch = {
   confident: boolean;
   score?: { home: number; away: number; ots: "OT" | "SO" | null } | null;
   hit?: boolean | null; // вечером: угадан ли победитель
+  goals?: number; // ожидаемый тотал (справочно)
+  leagueGoals?: number; // средний тотал лиги
 };
 
 export type PredictData = {
@@ -157,6 +159,14 @@ const Row: React.FC<{ match: PredictMatch; kind: PredictKind; h: number }> = ({ 
   );
 };
 
+// Заметно результативнее среднего по лиге — оранжевым, заметно «суше» — голубым.
+const goalsColor = (m: PredictMatch) => {
+  if (m.goals == null || m.leagueGoals == null) return C.muted;
+  if (m.goals >= m.leagueGoals + 0.4) return "#FF9F43";
+  if (m.goals <= m.leagueGoals - 0.4) return "#6EC6FF";
+  return C.muted;
+};
+
 const Center: React.FC<{ match: PredictMatch; kind: PredictKind }> = ({ match, kind }) => {
   const pct = Math.round(match.prob * 100);
   const score = kind === "check" ? match.score : null;
@@ -196,6 +206,12 @@ const Center: React.FC<{ match: PredictMatch; kind: PredictKind }> = ({ match, k
           ? `${match.hit ? "УГАДАЛИ" : "МИМО"}${score.ots ? " · " + OTS_LABEL[score.ots] : ""} · ${pct}%`
           : `${match.time} МСК`}
       </div>
+      {!score && match.goals != null ? (
+        <div style={{ fontSize: 17, fontWeight: 700, color: goalsColor(match), marginTop: 4, letterSpacing: 1 }}>
+          ~{String(match.goals).replace(".", ",")}{" "}
+          {Number.isInteger(match.goals) && (match.goals % 10 < 2 || match.goals % 10 > 4) ? "шайб" : "шайбы"}
+        </div>
+      ) : null}
     </div>
   );
 };
