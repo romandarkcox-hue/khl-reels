@@ -1,0 +1,68 @@
+{
+  "day": "2026-11-19",
+  "madeAt": "2026-11-19T09:02:07+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902279,
+      "time": "17:00",
+      "home": {
+        "id": 37,
+        "name": "Металлург Мг",
+        "rating": 1593
+      },
+      "away": {
+        "id": 25,
+        "name": "Трактор",
+        "rating": 1511
+      },
+      "favorite": "home",
+      "prob": 0.64,
+      "confident": true,
+      "goals": 6,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902280,
+      "time": "19:30",
+      "home": {
+        "id": 53,
+        "name": "Ак Барс",
+        "rating": 1481
+      },
+      "away": {
+        "id": 7,
+        "name": "Спартак",
+        "rating": 1528
+      },
+      "favorite": "away",
+      "prob": 0.55,
+      "confident": false,
+      "goals": 5.2,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902281,
+      "time": "19:30",
+      "home": {
+        "id": 71,
+        "name": "Нефтехимик",
+        "rating": 1479
+      },
+      "away": {
+        "id": 24,
+        "name": "СКА",
+        "rating": 1470
+      },
+      "favorite": "home",
+      "prob": 0.53,
+      "confident": false,
+      "goals": 5.8,
+      "leagueGoals": 5.1
+    }
+  ]
+}
