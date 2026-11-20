@@ -24,7 +24,13 @@
       "prob": 0.61,
       "confident": true,
       "goals": 5.2,
-      "leagueGoals": 5.2
+      "leagueGoals": 5.2,
+      "score": {
+        "home": 1,
+        "away": 0,
+        "ots": null
+      },
+      "hit": false
     },
     {
       "gameId": 902286,
@@ -43,7 +49,13 @@
       "prob": 0.6,
       "confident": true,
       "goals": 5.4,
-      "leagueGoals": 5.2
+      "leagueGoals": 5.2,
+      "score": {
+        "home": 3,
+        "away": 1,
+        "ots": null
+      },
+      "hit": true
     },
     {
       "gameId": 902283,
@@ -62,7 +74,13 @@
       "prob": 0.58,
       "confident": false,
       "goals": 4.4,
-      "leagueGoals": 5.2
+      "leagueGoals": 5.2,
+      "score": {
+        "home": 1,
+        "away": 3,
+        "ots": null
+      },
+      "hit": true
     },
     {
       "gameId": 902285,
@@ -81,7 +99,13 @@
       "prob": 0.53,
       "confident": false,
       "goals": 4.2,
-      "leagueGoals": 5.2
+      "leagueGoals": 5.2,
+      "score": {
+        "home": 3,
+        "away": 2,
+        "ots": "SO"
+      },
+      "hit": true
     },
     {
       "gameId": 902284,
@@ -100,7 +124,14 @@
       "prob": 0.71,
       "confident": true,
       "goals": 5.4,
-      "leagueGoals": 5.2
+      "leagueGoals": 5.2,
+      "score": {
+        "home": 0,
+        "away": 5,
+        "ots": null
+      },
+      "hit": true
     }
-  ]
+  ],
+  "checkedAt": "2026-11-20T21:53:30+03:00"
 }
