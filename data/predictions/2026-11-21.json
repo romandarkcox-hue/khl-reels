@@ -24,7 +24,13 @@
       "prob": 0.57,
       "confident": false,
       "goals": 5.4,
-      "leagueGoals": 5.1
+      "leagueGoals": 5.1,
+      "score": {
+        "home": 3,
+        "away": 1,
+        "ots": null
+      },
+      "hit": false
     },
     {
       "gameId": 902288,
@@ -43,7 +49,14 @@
       "prob": 0.66,
       "confident": true,
       "goals": 5.5,
-      "leagueGoals": 5.1
+      "leagueGoals": 5.1,
+      "score": {
+        "home": 2,
+        "away": 5,
+        "ots": null
+      },
+      "hit": true
     }
-  ]
+  ],
+  "checkedAt": "2026-11-21T20:13:22+03:00"
 }
