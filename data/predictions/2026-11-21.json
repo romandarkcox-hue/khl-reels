@@ -1,0 +1,49 @@
+{
+  "day": "2026-11-21",
+  "madeAt": "2026-11-21T09:10:14+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902287,
+      "time": "14:00",
+      "home": {
+        "id": 71,
+        "name": "Нефтехимик",
+        "rating": 1470
+      },
+      "away": {
+        "id": 7,
+        "name": "Спартак",
+        "rating": 1532
+      },
+      "favorite": "away",
+      "prob": 0.57,
+      "confident": false,
+      "goals": 5.4,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902288,
+      "time": "17:00",
+      "home": {
+        "id": 451,
+        "name": "ХК Сочи",
+        "rating": 1346
+      },
+      "away": {
+        "id": 24,
+        "name": "СКА",
+        "rating": 1479
+      },
+      "favorite": "away",
+      "prob": 0.66,
+      "confident": true,
+      "goals": 5.5,
+      "leagueGoals": 5.1
+    }
+  ]
+}
