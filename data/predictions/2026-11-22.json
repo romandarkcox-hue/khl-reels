@@ -1,0 +1,106 @@
+{
+  "day": "2026-11-22",
+  "madeAt": "2026-11-22T09:02:11+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902291,
+      "time": "14:00",
+      "home": {
+        "id": 34,
+        "name": "Авангард",
+        "rating": 1545
+      },
+      "away": {
+        "id": 53,
+        "name": "Ак Барс",
+        "rating": 1477
+      },
+      "favorite": "home",
+      "prob": 0.62,
+      "confident": true,
+      "goals": 4.8,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902293,
+      "time": "14:30",
+      "home": {
+        "id": 198,
+        "name": "Барыс",
+        "rating": 1471
+      },
+      "away": {
+        "id": 207,
+        "name": "Динамо Мн",
+        "rating": 1491
+      },
+      "favorite": "away",
+      "prob": 0.51,
+      "confident": false,
+      "goals": 5.7,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902289,
+      "time": "17:00",
+      "home": {
+        "id": 26,
+        "name": "Торпедо",
+        "rating": 1522
+      },
+      "away": {
+        "id": 190,
+        "name": "Автомобилист",
+        "rating": 1547
+      },
+      "favorite": "away",
+      "prob": 0.51,
+      "confident": false,
+      "goals": 4.9,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902292,
+      "time": "17:00",
+      "home": {
+        "id": 568,
+        "name": "Драконы",
+        "rating": 1453
+      },
+      "away": {
+        "id": 66,
+        "name": "Лада",
+        "rating": 1344
+      },
+      "favorite": "home",
+      "prob": 0.67,
+      "confident": true,
+      "goals": 5.3,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902290,
+      "time": "19:46",
+      "home": {
+        "id": 719,
+        "name": "Динамо М",
+        "rating": 1499
+      },
+      "away": {
+        "id": 2,
+        "name": "ЦСКА",
+        "rating": 1641
+      },
+      "favorite": "away",
+      "prob": 0.67,
+      "confident": true,
+      "goals": 4.7,
+      "leagueGoals": 5.1
+    }
+  ]
+}
