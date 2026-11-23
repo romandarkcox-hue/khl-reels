@@ -1,0 +1,30 @@
+{
+  "day": "2026-11-23",
+  "madeAt": "2026-11-23T09:02:20+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902294,
+      "time": "15:30",
+      "home": {
+        "id": 29,
+        "name": "Сибирь",
+        "rating": 1473
+      },
+      "away": {
+        "id": 56,
+        "name": "Северсталь",
+        "rating": 1538
+      },
+      "favorite": "away",
+      "prob": 0.57,
+      "confident": false,
+      "goals": 4.9,
+      "leagueGoals": 5.1
+    }
+  ]
+}
