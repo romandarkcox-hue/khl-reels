@@ -1,0 +1,106 @@
+{
+  "day": "2026-11-24",
+  "madeAt": "2026-11-24T09:02:09+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902298,
+      "time": "12:30",
+      "home": {
+        "id": 418,
+        "name": "Адмирал",
+        "rating": 1439
+      },
+      "away": {
+        "id": 53,
+        "name": "Ак Барс",
+        "rating": 1469
+      },
+      "favorite": "away",
+      "prob": 0.52,
+      "confident": false,
+      "goals": 5.6,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902295,
+      "time": "17:00",
+      "home": {
+        "id": 25,
+        "name": "Трактор",
+        "rating": 1509
+      },
+      "away": {
+        "id": 66,
+        "name": "Лада",
+        "rating": 1356
+      },
+      "favorite": "home",
+      "prob": 0.73,
+      "confident": true,
+      "goals": 5.2,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902296,
+      "time": "17:00",
+      "home": {
+        "id": 38,
+        "name": "Салават Юлаев",
+        "rating": 1493
+      },
+      "away": {
+        "id": 71,
+        "name": "Нефтехимик",
+        "rating": 1483
+      },
+      "favorite": "home",
+      "prob": 0.54,
+      "confident": false,
+      "goals": 5.9,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902297,
+      "time": "17:00",
+      "home": {
+        "id": 37,
+        "name": "Металлург Мг",
+        "rating": 1595
+      },
+      "away": {
+        "id": 207,
+        "name": "Динамо Мн",
+        "rating": 1499
+      },
+      "favorite": "home",
+      "prob": 0.65,
+      "confident": true,
+      "goals": 6.2,
+      "leagueGoals": 5.1
+    },
+    {
+      "gameId": 902299,
+      "time": "19:30",
+      "home": {
+        "id": 719,
+        "name": "Динамо М",
+        "rating": 1514
+      },
+      "away": {
+        "id": 190,
+        "name": "Автомобилист",
+        "rating": 1558
+      },
+      "favorite": "away",
+      "prob": 0.54,
+      "confident": false,
+      "goals": 4.8,
+      "leagueGoals": 5.1
+    }
+  ]
+}
