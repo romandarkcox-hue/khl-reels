@@ -1,0 +1,125 @@
+{
+  "day": "2026-11-26",
+  "madeAt": "2026-11-26T09:02:12+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902306,
+      "time": "12:00",
+      "home": {
+        "id": 54,
+        "name": "Амур",
+        "rating": 1527
+      },
+      "away": {
+        "id": 53,
+        "name": "Ак Барс",
+        "rating": 1482
+      },
+      "favorite": "home",
+      "prob": 0.59,
+      "confident": false,
+      "goals": 4.1,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902303,
+      "time": "12:30",
+      "home": {
+        "id": 418,
+        "name": "Адмирал",
+        "rating": 1426
+      },
+      "away": {
+        "id": 34,
+        "name": "Авангард",
+        "rating": 1553
+      },
+      "favorite": "away",
+      "prob": 0.66,
+      "confident": true,
+      "goals": 5.3,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902304,
+      "time": "17:00",
+      "home": {
+        "id": 25,
+        "name": "Трактор",
+        "rating": 1517
+      },
+      "away": {
+        "id": 190,
+        "name": "Автомобилист",
+        "rating": 1546
+      },
+      "favorite": "away",
+      "prob": 0.52,
+      "confident": false,
+      "goals": 5.3,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902308,
+      "time": "17:00",
+      "home": {
+        "id": 38,
+        "name": "Салават Юлаев",
+        "rating": 1497
+      },
+      "away": {
+        "id": 207,
+        "name": "Динамо Мн",
+        "rating": 1494
+      },
+      "favorite": "home",
+      "prob": 0.53,
+      "confident": false,
+      "goals": 6,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902305,
+      "time": "19:30",
+      "home": {
+        "id": 451,
+        "name": "ХК Сочи",
+        "rating": 1337
+      },
+      "away": {
+        "id": 71,
+        "name": "Нефтехимик",
+        "rating": 1479
+      },
+      "favorite": "away",
+      "prob": 0.67,
+      "confident": true,
+      "goals": 5.3,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902307,
+      "time": "19:30",
+      "home": {
+        "id": 7,
+        "name": "Спартак",
+        "rating": 1519
+      },
+      "away": {
+        "id": 2,
+        "name": "ЦСКА",
+        "rating": 1625
+      },
+      "favorite": "away",
+      "prob": 0.63,
+      "confident": true,
+      "goals": 5,
+      "leagueGoals": 5.2
+    }
+  ]
+}
