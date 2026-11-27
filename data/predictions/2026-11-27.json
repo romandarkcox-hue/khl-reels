@@ -1,0 +1,68 @@
+{
+  "day": "2026-11-27",
+  "madeAt": "2026-11-27T09:02:21+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902309,
+      "time": "18:00",
+      "home": {
+        "id": 66,
+        "name": "Лада",
+        "rating": 1348
+      },
+      "away": {
+        "id": 1,
+        "name": "Локомотив",
+        "rating": 1615
+      },
+      "favorite": "away",
+      "prob": 0.81,
+      "confident": true,
+      "goals": 4.7,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902311,
+      "time": "19:00",
+      "home": {
+        "id": 56,
+        "name": "Северсталь",
+        "rating": 1538
+      },
+      "away": {
+        "id": 29,
+        "name": "Сибирь",
+        "rating": 1454
+      },
+      "favorite": "home",
+      "prob": 0.64,
+      "confident": true,
+      "goals": 5,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902310,
+      "time": "19:30",
+      "home": {
+        "id": 24,
+        "name": "СКА",
+        "rating": 1482
+      },
+      "away": {
+        "id": 198,
+        "name": "Барыс",
+        "rating": 1473
+      },
+      "favorite": "home",
+      "prob": 0.53,
+      "confident": false,
+      "goals": 6,
+      "leagueGoals": 5.2
+    }
+  ]
+}
