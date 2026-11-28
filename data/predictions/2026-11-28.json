@@ -1,0 +1,87 @@
+{
+  "day": "2026-11-28",
+  "madeAt": "2026-11-28T09:02:02+03:00",
+  "model": {
+    "K": 14,
+    "HOME": 15,
+    "CARRY": 0.5
+  },
+  "predictions": [
+    {
+      "gameId": 902315,
+      "time": "10:00",
+      "home": {
+        "id": 54,
+        "name": "Амур",
+        "rating": 1514
+      },
+      "away": {
+        "id": 34,
+        "name": "Авангард",
+        "rating": 1555
+      },
+      "favorite": "away",
+      "prob": 0.54,
+      "confident": false,
+      "goals": 4.2,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902314,
+      "time": "14:00",
+      "home": {
+        "id": 25,
+        "name": "Трактор",
+        "rating": 1521
+      },
+      "away": {
+        "id": 37,
+        "name": "Металлург Мг",
+        "rating": 1601
+      },
+      "favorite": "away",
+      "prob": 0.59,
+      "confident": false,
+      "goals": 6.5,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902312,
+      "time": "17:00",
+      "home": {
+        "id": 7,
+        "name": "Спартак",
+        "rating": 1508
+      },
+      "away": {
+        "id": 26,
+        "name": "Торпедо",
+        "rating": 1520
+      },
+      "favorite": "home",
+      "prob": 0.5,
+      "confident": false,
+      "goals": 5.2,
+      "leagueGoals": 5.2
+    },
+    {
+      "gameId": 902313,
+      "time": "17:00",
+      "home": {
+        "id": 451,
+        "name": "ХК Сочи",
+        "rating": 1336
+      },
+      "away": {
+        "id": 568,
+        "name": "Драконы",
+        "rating": 1441
+      },
+      "favorite": "away",
+      "prob": 0.63,
+      "confident": true,
+      "goals": 5.4,
+      "leagueGoals": 5.2
+    }
+  ]
+}
